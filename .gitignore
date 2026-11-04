@@ -1,0 +1,16 @@
+# Dependency & OS files
+.DS_Store
+Thumbs.db
+node_modules/
+
+# Secrets & Environment configs
+config.js
+.env
+.env.local
+firebase-debug.log
+firestore-debug.log
+
+# IDE & cache
+.vscode/
+.idea/
+*.swp

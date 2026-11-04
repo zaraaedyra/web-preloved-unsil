@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Masuk Mahasiswa — PRELOVEDU</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/pages.css" />
+</head>
+<body style="background-color: var(--lime); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
+
+  <!-- Card Login Playful-Editorial -->
+  <div class="card p-4 p-sm-5" style="border: var(--border-thick); border-radius: 32px; background: #fff; box-shadow: var(--shadow-flat); max-width: 440px; width: 100%; position: relative; z-index: 2;">
+    <!-- Logo Brand -->
+    <div class="text-center mb-4" id="login-logo-mount"></div>
+
+    <h1 style="font-family: var(--font-serif); font-size: 1.6rem; text-align: center; margin-bottom: 0.5rem;">
+      Komunitas Preloved Mahasiswa
+    </h1>
+    <p style="font-size: 0.88rem; color: var(--ink-muted); text-align: center; margin-bottom: 1.5rem;">
+      Masuk dengan email kampus (<code>.ac.id</code>) untuk mulai tawar-menawar barang kating.
+    </p>
+
+    <form id="login-form">
+      <div class="mb-3">
+        <label for="login-email" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; display: block;">
+          Email Kampus (.ac.id)
+        </label>
+        <input type="email" id="login-email" class="input-pill" placeholder="nama@mahasiswa.ac.id" required />
+      </div>
+
+      <div class="mb-4">
+        <label for="login-password" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; display: block;">
+          Kata Sandi
+        </label>
+        <input type="password" id="login-password" class="input-pill" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit" class="btn-pill btn-pill-lime w-100" style="font-size: 1rem;">
+        Masuk ke PRELOVEDU
+      </button>
+    </form>
+
+    <div class="text-center mt-4">
+      <a href="../index.html" class="section-link" style="font-size: 0.85rem;">
+        ← Kembali ke Halaman Utama (Mode Tamu)
+      </a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getWordmarkLogo, renderFavicon } from '../assets/js/components/logo.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Favicon
+      const linkFavicon = document.createElement('link');
+      linkFavicon.rel = 'icon';
+      linkFavicon.type = 'image/svg+xml';
+      linkFavicon.href = renderFavicon();
+      document.head.appendChild(linkFavicon);
+
+      // Logo Mount
+      document.getElementById('login-logo-mount').innerHTML = getWordmarkLogo({ height: 32 });
+
+      // Form Submit Validation (.ac.id)
+      document.getElementById('login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+
+        if (!email.endsWith('.ac.id')) {
+          alert('Mohon gunakan alamat email resmi kampus dengan domain .ac.id');
+          return;
+        }
+
+        alert('Login berhasil! Selamat datang di PRELOVEDU.');
+        window.location.href = '../index.html';
+      });
+    });
+  </script>
+</body>
+</html>

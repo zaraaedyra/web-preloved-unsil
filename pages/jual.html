@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Pasang Iklan Preloved — PRELOVEDU</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/pages.css" />
+
+  <style>
+    .stepper-header {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .stepper-header::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background-color: rgba(42,42,42,0.15);
+      z-index: 0;
+    }
+
+    .step-indicator {
+      position: relative;
+      z-index: 1;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-circle);
+      border: var(--border-thick);
+      background-color: var(--white);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .step-indicator.active {
+      background-color: var(--lime);
+    }
+
+    .step-indicator.completed {
+      background-color: var(--ink);
+      color: var(--white);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Mount -->
+  <div id="header-mount"></div>
+
+  <main class="app-container" style="padding-top: 1.5rem; max-width: 680px;">
+    <!-- Title Bar -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <a href="../index.html" class="btn-circle btn-circle-white" aria-label="Kembali">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </a>
+      <h1 class="hero-title" style="font-size: 1.8rem; margin-bottom: 0;">Pasang Iklan Barang</h1>
+    </div>
+
+    <!-- Stepper Header (1. Foto -> 2. Detail -> 3. Harga) -->
+    <div class="stepper-header">
+      <div class="d-flex flex-column align-items-center">
+        <div class="step-indicator active" id="step-dot-1">1</div>
+        <span style="font-size: 0.75rem; font-weight: 700; margin-top: 4px;">Kategori</span>
+      </div>
+      <div class="d-flex flex-column align-items-center">
+        <div class="step-indicator" id="step-dot-2">2</div>
+        <span style="font-size: 0.75rem; font-weight: 700; margin-top: 4px;">Detail</span>
+      </div>
+      <div class="d-flex flex-column align-items-center">
+        <div class="step-indicator" id="step-dot-3">3</div>
+        <span style="font-size: 0.75rem; font-weight: 700; margin-top: 4px;">Harga & Terbit</span>
+      </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="card p-4 mb-5" style="border: var(--border-thick); border-radius: var(--radius-card); background: #fff; box-shadow: var(--shadow-flat);">
+      <form id="sell-form">
+        <!-- Step 1: Kategori & Foto -->
+        <div id="step-content-1">
+          <h2 style="font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 1rem;">1. Pilih Kategori & Fakultas</h2>
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 0.88rem;">Kategori Barang</label>
+            <select id="form-category" class="input-pill select-pill" required>
+              <option value="buku">Buku Bekas Kuliah</option>
+              <option value="jaket">Jaket / Outerwear / Jas Lab</option>
+              <option value="hoodie">Hoodie / Sweatshirt</option>
+              <option value="kaos">Kaos & Polo Shirt</option>
+              <option value="celana">Celana Kuliah</option>
+              <option value="praktikum">Peralatan Praktikum / Alat Tulis Arsitektur</option>
+              <option value="lainnya">Lainnya (Elektronik / Totebag / Kos)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 0.88rem;">Fakultas Sasaran / Asal</label>
+            <select id="form-faculty" class="input-pill select-pill" required>
+              <option value="Teknik">Teknik</option>
+              <option value="Ekonomi & Bisnis">Ekonomi & Bisnis</option>
+              <option value="MIPA">MIPA</option>
+              <option value="Hukum">Hukum</option>
+              <option value="Fasilkom">Fasilkom</option>
+              <option value="FISIP">FISIP</option>
+              <option value="Kedokteran">Kedokteran</option>
+              <option value="Pertanian">Pertanian</option>
+              <option value="FKIP">FKIP</option>
+              <option value="Umum">Umum (Semua Jurusan)</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn-pill btn-pill-lime w-100 mt-3" id="btn-next-1">
+            Lanjut ke Detail Barang
+          </button>
+        </div>
+
+        <!-- Step 2: Detail Barang -->
+        <div id="step-content-2" style="display: none;">
+          <h2 style="font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 1rem;">2. Judul & Deskripsi</h2>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 0.88rem;">Judul Iklan (Jelas & Spesifik)</label>
+            <input type="text" id="form-title" class="input-pill" placeholder="Contoh: Jas Lab Kimia FMIPA Katun Tebal Size L" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 0.88rem;">Kondisi Barang</label>
+            <select id="form-condition" class="input-pill select-pill" required>
+              <option value="Seperti baru">Seperti Baru (Mulus 95-99%)</option>
+              <option value="Baik">Baik (Ada bekas pemakaian wajar 80-90%)</option>
+              <option value="Layak pakai">Layak Pakai (Fungsi 100% normal)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 0.88rem;">Deskripsi Barang & Alasan Dijual</label>
+            <textarea id="form-desc" class="input-pill" rows="3" style="border-radius: var(--radius-inner);" placeholder="Jelaskan kondisi fisik, kelengkapan, dan alasan dijual..." required></textarea>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="button" class="btn-pill btn-pill-outline w-50" id="btn-back-2">Kembali</button>
+            <button type="button" class="btn-pill btn-pill-lime w-50" id="btn-next-2">Lanjut ke Harga</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Harga & Terbitkan -->
+        <div id="step-content-3" style="display: none;">
+          <h2 style="font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 1rem;">3. Harga Penjualan</h2>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 0.88rem;">Harga Jual (Rp)</label>
+            <input type="number" id="form-price" class="input-pill" style="font-size: 1.2rem; font-weight: 700;" placeholder="Contoh: 50000" required />
+            <small class="text-muted">Harga bersahabat lebih cepat ditawar oleh maba.</small>
+          </div>
+
+          <div class="p-3 mb-4" style="background: var(--paper); border-radius: var(--radius-sm); border: 1.5px solid rgba(42,42,42,0.15);">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge-pill badge-verified">✓ Terverifikasi</span>
+              <span style="font-size: 0.85rem; font-weight: 700;">Iklan akan diterbitkan atas nama Anda</span>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn-pill btn-pill-outline w-50" id="btn-back-3">Kembali</button>
+            <button type="submit" class="btn-pill btn-pill-lime w-50" id="btn-publish">Terbitkan Iklan!</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Bottom Nav Mount -->
+  <div id="bottom-nav-mount"></div>
+
+  <script type="module">
+    import { renderHeader, renderBottomNav, showToast } from '../assets/js/components/navbar.js';
+    import { renderFavicon } from '../assets/js/components/logo.js';
+    import { getProducts, getCurrentUser } from '../assets/js/services/storage.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Favicon
+      const linkFavicon = document.createElement('link');
+      linkFavicon.rel = 'icon';
+      linkFavicon.type = 'image/svg+xml';
+      linkFavicon.href = renderFavicon();
+      document.head.appendChild(linkFavicon);
+
+      // Render Navs
+      document.getElementById('header-mount').innerHTML = renderHeader('jual', '../');
+      document.getElementById('bottom-nav-mount').innerHTML = renderBottomNav('jual', '../');
+
+      setupStepper();
+    });
+
+    function setupStepper() {
+      const step1 = document.getElementById('step-content-1');
+      const step2 = document.getElementById('step-content-2');
+      const step3 = document.getElementById('step-content-3');
+
+      const dot1 = document.getElementById('step-dot-1');
+      const dot2 = document.getElementById('step-dot-2');
+      const dot3 = document.getElementById('step-dot-3');
+
+      document.getElementById('btn-next-1').addEventListener('click', () => {
+        step1.style.display = 'none';
+        step2.style.display = 'block';
+        dot2.classList.add('active');
+        dot1.classList.add('completed');
+      });
+
+      document.getElementById('btn-back-2').addEventListener('click', () => {
+        step2.style.display = 'none';
+        step1.style.display = 'block';
+        dot2.classList.remove('active');
+      });
+
+      document.getElementById('btn-next-2').addEventListener('click', () => {
+        const title = document.getElementById('form-title').value;
+        if (!title.trim()) {
+          alert('Silakan isi judul iklan terlebih dahulu');
+          return;
+        }
+        step2.style.display = 'none';
+        step3.style.display = 'block';
+        dot3.classList.add('active');
+        dot2.classList.add('completed');
+      });
+
+      document.getElementById('btn-back-3').addEventListener('click', () => {
+        step3.style.display = 'none';
+        step2.style.display = 'block';
+        dot3.classList.remove('active');
+      });
+
+      // Submit Form
+      document.getElementById('sell-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const user = getCurrentUser();
+        const price = Number(document.getElementById('form-price').value);
+
+        const newProduct = {
+          id: `prd-${Date.now()}`,
+          title: document.getElementById('form-title').value,
+          category: document.getElementById('form-category').value,
+          categoryLabel: document.getElementById('form-category').options[document.getElementById('form-category').selectedIndex].text,
+          faculty: document.getElementById('form-faculty').value,
+          price: price,
+          originalPrice: Math.round(price * 1.4),
+          condition: document.getElementById('form-condition').value,
+          conditionBadge: document.getElementById('form-condition').value,
+          description: document.getElementById('form-desc').value,
+          seller: {
+            name: user.name,
+            faculty: user.faculty,
+            isVerified: true,
+            activeItems: 1,
+            avatar: user.avatar
+          },
+          images: ['assets/img/products/calculus-book.svg'],
+          colors: ['#2A2A2A'],
+          sizes: [],
+          featured: false,
+          createdAt: new Date().toISOString()
+        };
+
+        const products = getProducts();
+        products.unshift(newProduct);
+        localStorage.setItem('prelovedu_products', JSON.stringify(products));
+
+        showToast('🎉 Iklan barang berhasil diterbitkan!');
+        setTimeout(() => {
+          window.location.href = '../index.html';
+        }, 800);
+      });
+    }
+  </script>
+</body>
+</html>
