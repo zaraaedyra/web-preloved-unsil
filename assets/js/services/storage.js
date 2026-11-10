@@ -1,7 +1,7 @@
 // PRELOVEDU — Storage & State Service (storage.js)
 // Lapisan data terpisah untuk memudahkan transisi dari LocalStorage ke Firebase Firestore (Fase 2)
 
-import { dummyProducts } from '../data/dummy-products.js';
+import { dummyProducts, normalizeFaculty } from '../data/dummy-products.js';
 import { campusSpots } from '../data/campus-spots.js';
 
 export const STORAGE_KEYS = {
@@ -136,7 +136,7 @@ export function ensureProductCodLocation(product) {
   }
 
   // Fallback preset berdasarkan fakultas / ID
-  const isKampus2 = product.faculty === 'Pertanian' || product.faculty === 'FISIP' || (product.id && product.id.endsWith('3'));
+  const isKampus2 = product.faculty === 'Pertanian' || product.faculty === 'FP' || product.faculty === 'FISIP' || (product.id && product.id.endsWith('3'));
   const campusId = isKampus2 ? 'kampus-2' : 'kampus-1';
   const campus = campusSpots[campusId] || campusSpots['kampus-1'];
   const spots = campus.spots;
@@ -164,9 +164,21 @@ export function getProducts() {
   initStorage();
   try {
     const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || dummyProducts;
-    return raw.map(ensureProductCodLocation);
+    return raw.map(product => ensureProductCodLocation({
+      ...product,
+      faculty: normalizeFaculty(product.faculty),
+      seller: product.seller
+        ? { ...product.seller, faculty: normalizeFaculty(product.seller.faculty) }
+        : product.seller
+    }));
   } catch (e) {
-    return dummyProducts.map(ensureProductCodLocation);
+    return dummyProducts.map(product => ensureProductCodLocation({
+      ...product,
+      faculty: normalizeFaculty(product.faculty),
+      seller: product.seller
+        ? { ...product.seller, faculty: normalizeFaculty(product.seller.faculty) }
+        : product.seller
+    }));
   }
 }
 
