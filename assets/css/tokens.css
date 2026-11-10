@@ -48,6 +48,7 @@
   --transition-smooth: 240ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layout Spacing & Consts */
+  --spacing-section: 2rem;
   --bottom-nav-height: 76px;
   --header-height: 72px;
   --max-content-width: 1240px;

@@ -212,17 +212,22 @@
 /* ==========================================================
    4. CHIP KATEGORI (Circular + Label)
    ========================================================== */
+/* ==========================================================
+   4. CHIP KATEGORI (5 Kolom Grid Simetris)
+   ========================================================== */
+.category-chips-grid,
 .category-chips-scroll {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  overflow-x: auto;
-  padding: 0.5rem 0.25rem 1rem 0.25rem;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  width: 100%;
+  gap: 0.75rem;
+  padding: 0.5rem 0 0.75rem 0;
+  justify-items: center;
+  align-items: start;
 }
 
-.category-chips-scroll::-webkit-scrollbar {
+.category-chips-scroll::-webkit-scrollbar,
+.category-chips-grid::-webkit-scrollbar {
   display: none;
 }
 
@@ -230,12 +235,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.5rem;
   cursor: pointer;
   text-decoration: none;
   background: none;
   border: none;
-  flex-shrink: 0;
+  width: 100%;
+  max-width: 120px;
+  padding: 0;
   transition: transform var(--transition-fast);
 }
 
@@ -253,31 +261,46 @@
   align-items: center;
   justify-content: center;
   color: var(--ink);
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
   box-shadow: 0 3px 0 var(--ink);
+  flex-shrink: 0;
 }
 
+.category-circle svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* Item aktif & hover: HANYA ganti warna/outline, JANGAN membesarkan ukuran */
 .category-item.active .category-circle {
   background-color: var(--lilac);
-  transform: scale(1.05);
-  box-shadow: 0 4px 0 var(--ink);
+  border-color: var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
 }
 
 .category-item:hover .category-circle {
   background-color: var(--lilac-hover);
-  transform: scale(1.05);
 }
 
+/* Label: rata tengah, boleh turun 2 baris, tinggi area label sama */
 .category-label {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--ink);
   text-align: center;
-  white-space: nowrap;
-  padding: 0.2rem 0.65rem;
+  line-height: 1.25;
+  height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.5rem;
   border-radius: var(--radius-pill);
   border: 1.5px solid transparent;
-  transition: all var(--transition-fast);
+  width: 100%;
+  word-break: normal;
+  overflow-wrap: break-word;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .category-item.active .category-label {
@@ -286,6 +309,37 @@
   color: var(--ink);
   font-weight: 800;
   box-shadow: 0 2px 0 var(--ink);
+}
+
+/* Responsif Mobile (375px): 5 kolom tetap muat, ikon dikecilkan, tanpa scroll horizontal */
+@media (max-width: 480px) {
+  .category-chips-grid,
+  .category-chips-scroll {
+    gap: 0.25rem;
+    padding: 0.25rem 0 0.5rem 0;
+  }
+
+  .category-item {
+    gap: 0.35rem;
+    max-width: none;
+  }
+
+  .category-circle {
+    width: 46px;
+    height: 46px;
+  }
+
+  .category-circle svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .category-label {
+    font-size: 0.68rem;
+    line-height: 1.15;
+    height: 2.4em;
+    padding: 0.15rem 0.25rem;
+  }
 }
 
 /* Quick Filter Pills (Kondisi & Urutan) */
