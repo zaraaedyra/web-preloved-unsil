@@ -20,7 +20,7 @@ export function formatRupiah(number) {
 export function renderProductCard(product, { basePath = '' } = {}) {
   const favorited = isFavorited(product.id);
   const detailUrl = `${basePath}pages/detail.html?id=${product.id}`;
-  const imgUrl = `${basePath}${product.images[0] || 'assets/img/products/calculus-book.svg'}`;
+  const imgUrl = `${basePath}${product.images && product.images[0] ? product.images[0] : 'assets/img/products/prd-001-1.jpg'}`;
 
   // Warna latar thumbnail divariasi agar estetik (lilac, lime lembut, atau warm gray)
   const bgClasses = ['bg-lilac', 'bg-lime', 'bg-gray'];

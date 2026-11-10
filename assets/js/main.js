@@ -15,7 +15,35 @@ const state = {
   sortBy: 'terbaru'
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+// Data Slide Hero Carousel
+const heroSlides = [
+  {
+    tag: '🔥 Hot Deals Minggu Ini',
+    title: 'Hemat Uang Kuliah! Buku & Outfit Kating Siap Pakai',
+    subtitle: 'Dapatkan perlengkapan kuliah semester ini langsung dari kakak tingkat satu kampus dengan harga bersahabat.',
+    img: 'assets/img/products/prd-001-1.jpg',
+    link: 'pages/detail.html?id=prd-001'
+  },
+  {
+    tag: '⚡ Siap Praktikum Kampus',
+    title: 'Jas Lab Kimia FMIPA & Stetoskop Standar Kampus',
+    subtitle: 'Jas lab katun tebal, kalkulator saintifik, dan peralatan praktikum semester 1 tanpa keluar biaya mahal.',
+    img: 'assets/img/products/prd-002-1.jpg',
+    link: 'pages/detail.html?id=prd-002'
+  },
+  {
+    tag: '🧥 Outfit Kuliah Kece',
+    title: 'Hoodie Vintage Sage & Jaket Parka Tahan Angin',
+    subtitle: 'Outerwear nyaman kelas ber-AC dan motoran kampus. Preloved pilihan kualitas prima siap pakai.',
+    img: 'assets/img/products/prd-003-1.jpg',
+    link: 'pages/detail.html?id=prd-003'
+  }
+];
+
+let currentSlideIdx = 0;
+let carouselTimer = null;
+
+function init() {
   // 1. Pasang Favicon SVG Otomatis
   const linkFavicon = document.createElement('link');
   linkFavicon.rel = 'icon';
@@ -36,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Render Dropdown Fakultas
   renderFacultyDropdown();
 
-  // 5. Render Banner Hero Hot Deals & Featured Item
+  // 5. Render Banner Hero Hot Deals & Carousel Slider
   setupHeroInteractions();
 
   // 6. Render Grid Produk Pertama Kali
@@ -44,7 +72,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 7. Pasang Event Listeners
   setupEventListeners();
-});
+}
+
+// Jalankan init baik jika DOM sudah siap maupun saat masih loading
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
 /**
  * Render Chip Kategori Bulat
@@ -109,9 +144,9 @@ function applyFiltersAndRender() {
     // 1. Search Query
     if (state.searchQuery.trim()) {
       const q = state.searchQuery.toLowerCase();
-      const matchTitle = item.title.toLowerCase().includes(q);
-      const matchDesc = item.description.toLowerCase().includes(q);
-      const matchSeller = item.seller.name.toLowerCase().includes(q);
+      const matchTitle = (item.title || '').toLowerCase().includes(q);
+      const matchDesc = (item.description || '').toLowerCase().includes(q);
+      const matchSeller = (item.seller?.name || '').toLowerCase().includes(q);
       if (!matchTitle && !matchDesc && !matchSeller) return false;
     }
 
@@ -129,6 +164,7 @@ function applyFiltersAndRender() {
     if (state.selectedCondition !== 'all') {
       if (state.selectedCondition === 'seperti_baru' && item.condition !== 'Seperti baru') return false;
       if (state.selectedCondition === 'baik' && item.condition !== 'Baik') return false;
+      if (state.selectedCondition === 'layak_pakai' && item.condition !== 'Layak pakai') return false;
     }
 
     return true;
@@ -141,7 +177,7 @@ function applyFiltersAndRender() {
     filtered.sort((a, b) => b.price - a.price);
   } else {
     // Terbaru
-    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   }
 
   // Tampilkan Jumlah
@@ -173,8 +209,13 @@ function applyFiltersAndRender() {
       state.selectedCategory = 'all';
       state.selectedFaculty = 'Semua Fakultas';
       state.selectedCondition = 'all';
-      document.getElementById('search-input').value = '';
-      document.getElementById('faculty-select').value = 'Semua Fakultas';
+      const searchInput = document.getElementById('search-input');
+      const facultySelect = document.getElementById('faculty-select');
+      if (searchInput) searchInput.value = '';
+      if (facultySelect) facultySelect.value = 'Semua Fakultas';
+      document.querySelectorAll('.chip-filter[data-condition]').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-condition') === 'all');
+      });
       renderCategories();
       applyFiltersAndRender();
     });
@@ -223,7 +264,7 @@ function setupEventListeners() {
       debounceTimer = setTimeout(() => {
         state.searchQuery = e.target.value;
         applyFiltersAndRender();
-      }, 200);
+      }, 150);
     });
   }
 
@@ -237,7 +278,7 @@ function setupEventListeners() {
     });
   });
 
-  // Sort Dropdown / Chips
+  // Sort Dropdown
   const sortSelect = document.getElementById('sort-select');
   if (sortSelect) {
     sortSelect.addEventListener('change', (e) => {
@@ -245,17 +286,67 @@ function setupEventListeners() {
       applyFiltersAndRender();
     });
   }
+
+  // Link "Lihat semua" di kategori
+  document.querySelectorAll('.section-link[href="#katalog-section"]').forEach(link => {
+    link.addEventListener('click', () => {
+      state.selectedCategory = 'all';
+      document.querySelectorAll('.category-item').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-category-id') === 'all');
+      });
+      applyFiltersAndRender();
+    });
+  });
 }
 
 /**
- * Interaksi Dots Hero Banner
+ * Interaksi Carousel Hero Banner yang Berfungsi Nyata (Slide & Dots)
  */
 function setupHeroInteractions() {
   const dots = document.querySelectorAll('.carousel-dot');
+  if (!dots.length) return;
+
+  function switchSlide(idx) {
+    currentSlideIdx = (idx + heroSlides.length) % heroSlides.length;
+    const slide = heroSlides[currentSlideIdx];
+
+    // Update dots
+    dots.forEach((d, i) => d.classList.toggle('active', i === currentSlideIdx));
+
+    // Update banner content
+    const tagEl = document.querySelector('.hero-pill-tag');
+    const titleEl = document.querySelector('.hero-title');
+    const subEl = document.querySelector('.hero-subtitle');
+    const imgEl = document.getElementById('hero-img');
+    const ctaEl = document.querySelector('.hero-text-col .btn-pill');
+
+    if (tagEl) tagEl.innerHTML = slide.tag;
+    if (titleEl) titleEl.textContent = slide.title;
+    if (subEl) subEl.textContent = slide.subtitle;
+    if (imgEl) {
+      imgEl.style.opacity = '0.3';
+      imgEl.src = slide.img;
+      setTimeout(() => { imgEl.style.opacity = '1'; }, 100);
+    }
+    if (ctaEl && slide.link) {
+      ctaEl.setAttribute('href', slide.link);
+    }
+  }
+
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {
-      dots.forEach(d => d.classList.remove('active'));
-      dot.classList.add('active');
+      clearInterval(carouselTimer);
+      switchSlide(index);
+      startAutoCarousel();
     });
   });
+
+  function startAutoCarousel() {
+    clearInterval(carouselTimer);
+    carouselTimer = setInterval(() => {
+      switchSlide(currentSlideIdx + 1);
+    }, 6000);
+  }
+
+  startAutoCarousel();
 }

@@ -60,7 +60,7 @@
     import { formatRupiah } from '../assets/js/components/product-card.js';
     import { icons } from '../assets/js/components/icons.js';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function init() {
       // Favicon
       const linkFavicon = document.createElement('link');
       linkFavicon.rel = 'icon';
@@ -73,7 +73,13 @@
       document.getElementById('bottom-nav-mount').innerHTML = renderBottomNav('favorit', '../');
 
       renderFavoriteItems();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
 
     function renderFavoriteItems() {
       const container = document.getElementById('favorites-list');

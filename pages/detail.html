@@ -19,8 +19,8 @@
       border-radius: var(--radius-card);
       box-shadow: var(--shadow-flat);
       position: relative;
-      padding: 2rem 1.5rem;
-      min-height: 320px;
+      padding: 2.25rem 1.5rem 1.5rem 1.5rem;
+      min-height: 340px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -39,12 +39,60 @@
       z-index: 5;
     }
 
+    .detail-product-img-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 230px;
+      margin-bottom: 1rem;
+    }
+
     .detail-product-img {
       max-height: 220px;
-      max-width: 85%;
-      object-fit: contain;
-      filter: drop-shadow(0 18px 16px rgba(42, 42, 42, 0.28));
+      max-width: 88%;
+      object-fit: cover;
+      border-radius: 18px;
+      border: var(--border-thick);
+      box-shadow: 0 14px 20px rgba(42, 42, 42, 0.25);
       z-index: 2;
+      transition: all var(--transition-fast);
+    }
+
+    .detail-gallery-thumbs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      z-index: 3;
+      margin-top: 0.5rem;
+    }
+
+    .gallery-thumb-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 2px solid var(--ink);
+      overflow: hidden;
+      cursor: pointer;
+      background: #fff;
+      padding: 2px;
+      opacity: 0.65;
+      transition: all var(--transition-fast);
+    }
+
+    .gallery-thumb-btn.active {
+      opacity: 1;
+      transform: scale(1.1);
+      box-shadow: 0 0 0 2px var(--lime);
+    }
+
+    .gallery-thumb-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
     }
 
     .detail-floating-bar {
@@ -94,6 +142,47 @@
       from { transform: translateY(100%); }
       to { transform: translateY(0); }
     }
+
+    /* Variant chips */
+    .variant-size-chip {
+      min-width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: var(--border-thick);
+      background: var(--white);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      padding: 0 0.4rem;
+    }
+
+    .variant-size-chip.active {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .variant-color-swatch {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: var(--border-thick);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .variant-color-swatch.active::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+    }
   </style>
 </head>
 <body style="padding-bottom: 95px;">
@@ -103,31 +192,36 @@
 
   <main class="app-container" style="padding-top: 1.25rem; max-width: 820px;">
 
-    <!-- 1. Hero Box Thumbnail Produk dengan Bayangan Elips -->
+    <!-- 1. Hero Box Thumbnail Produk dengan Bayangan Elips & Galeri Realpic -->
     <section class="detail-hero-box" id="detail-hero-box">
       <!-- Tombol Aksi Atas -->
       <div class="detail-nav-actions">
-        <a href="../index.html" class="btn-circle btn-circle-white" aria-label="Kembali ke Beranda">
+        <a href="javascript:void(0)" id="btn-back-nav" class="btn-circle btn-circle-white" aria-label="Kembali" title="Kembali">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
         </a>
 
-        <button type="button" id="btn-fav-detail" class="btn-circle btn-circle-white" aria-label="Favorit">
+        <button type="button" id="btn-fav-detail" class="btn-circle btn-circle-white" aria-label="Favorit" title="Simpan ke favorit">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
           </svg>
         </button>
       </div>
 
-      <!-- Gambar Produk -->
-      <img id="detail-img" src="../assets/img/products/calculus-book.svg" alt="Foto Produk" class="detail-product-img" />
-      <div class="product-thumb-shadow" style="width: 55%; height: 24px; bottom: 20px;"></div>
+      <!-- Gambar Produk Utama -->
+      <div class="detail-product-img-wrap">
+        <img id="detail-img" src="../assets/img/products/prd-001-1.jpg" alt="Foto Produk Realpic" class="detail-product-img" />
+        <div class="product-thumb-shadow" style="width: 55%; height: 24px; bottom: -6px;"></div>
+      </div>
+
+      <!-- Galeri Thumbnail Realpic -->
+      <div class="detail-gallery-thumbs" id="detail-gallery-thumbs"></div>
     </section>
 
     <!-- 2. Badges & Judul Produk -->
-    <div class="d-flex align-items-center gap-2 mb-2">
+    <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
       <span id="detail-badge-condition" class="badge-pill badge-pill-lime">Seperti baru</span>
       <span id="detail-badge-faculty" class="badge-pill badge-pill-lilac">Teknik</span>
       <span id="detail-badge-category" class="badge-pill badge-pill-ink">Buku Bekas</span>
@@ -141,23 +235,38 @@
       <div id="detail-price" class="product-price-val" style="font-size: 2.15rem; color: var(--ink);">
         Rp 0
       </div>
-      <span id="detail-original-price" style="text-decoration: line-through; color: var(--ink-muted); font-size: 1rem;">
+      <span id="detail-original-price" style="text-decoration: line-through; color: var(--ink-muted); font-size: 1.05rem;">
         Rp 0
       </span>
+      <span class="badge-pill badge-pill-lime" id="detail-discount-badge" style="font-size: 0.75rem;">Hemat 40%</span>
     </div>
 
     <!-- 3. Pilihan Ukuran & Warna (Jika Relevan) -->
-    <div id="detail-variants-section" class="mb-4" style="display: none;">
-      <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;">Pilihan Ukuran / Warna</h3>
-      <div class="d-flex align-items-center gap-2" id="detail-variants-list"></div>
+    <div id="detail-variants-section" class="card p-3 mb-4" style="border: var(--border-thick); border-radius: var(--radius-card); background: #fff; box-shadow: var(--shadow-flat); display: none;">
+      <div id="sizes-row-container" class="mb-3" style="display: none;">
+        <label class="fw-bold" style="font-size: 0.85rem; margin-bottom: 0.4rem; display: block;">
+          Pilih Ukuran Tersedia:
+        </label>
+        <div class="d-flex align-items-center gap-2" id="sizes-list"></div>
+      </div>
+
+      <div id="colors-row-container" style="display: none;">
+        <label class="fw-bold" style="font-size: 0.85rem; margin-bottom: 0.4rem; display: block;">
+          Pilihan Warna Produk:
+        </label>
+        <div class="d-flex align-items-center gap-2" id="colors-list"></div>
+      </div>
     </div>
 
     <!-- 4. Deskripsi Lengkap -->
     <section class="card p-4 mb-4" style="border: var(--border-thick); border-radius: var(--radius-card); background: #fff; box-shadow: var(--shadow-flat);">
       <h2 style="font-family: var(--font-serif); font-size: 1.25rem; margin-bottom: 0.75rem;">Deskripsi Barang</h2>
-      <p id="detail-desc" style="color: var(--ink-light); line-height: 1.6; font-size: 0.95rem; margin-bottom: 0;">
+      <p id="detail-desc" style="color: var(--ink-light); line-height: 1.6; font-size: 0.95rem; margin-bottom: 0.5rem;">
         Memuat deskripsi...
       </p>
+      <button type="button" id="btn-toggle-desc" class="section-link" style="background: none; border: none; padding: 0; text-align: left; display: none;">
+        Baca selengkapnya ↓
+      </button>
     </section>
 
     <!-- 5. Kartu Mini Penjual -->
@@ -277,13 +386,14 @@
   <script type="module">
     import { renderHeader, showToast } from '../assets/js/components/navbar.js';
     import { renderFavicon } from '../assets/js/components/logo.js';
-    import { getProductById, getProducts, isFavorited, toggleFavorite, getOffers } from '../assets/js/services/storage.js';
+    import { getProductById, getProducts, isFavorited, toggleFavorite, getOffers, saveOffers } from '../assets/js/services/storage.js';
     import { formatRupiah } from '../assets/js/components/product-card.js';
     import { icons } from '../assets/js/components/icons.js';
 
     let currentProduct = null;
+    let selectedImageIdx = 0;
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function init() {
       // Pasang Favicon
       const linkFavicon = document.createElement('link');
       linkFavicon.rel = 'icon';
@@ -294,6 +404,18 @@
       // Render Header
       document.getElementById('header-mount').innerHTML = renderHeader('detail', '../');
 
+      // Setup tombol kembali
+      const backNav = document.getElementById('btn-back-nav');
+      if (backNav) {
+        backNav.addEventListener('click', () => {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = '../index.html';
+          }
+        });
+      }
+
       // Ambil ID dari URL
       const urlParams = new URLSearchParams(window.location.search);
       const productId = urlParams.get('id') || 'prd-001';
@@ -302,24 +424,115 @@
       loadProductDetails(currentProduct);
       checkExistingOffer(currentProduct);
       setupOfferModal();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
 
     function loadProductDetails(prod) {
       document.title = `${prod.title} — PRELOVEDU`;
       document.getElementById('detail-title').textContent = prod.title;
-      document.getElementById('detail-desc').textContent = prod.description;
       document.getElementById('detail-price').textContent = formatRupiah(prod.price);
-      document.getElementById('detail-original-price').textContent = formatRupiah(prod.originalPrice || prod.price * 1.5);
-      document.getElementById('detail-img').src = `../${prod.images[0]}`;
+      
+      const origPrice = prod.originalPrice || Math.round(prod.price * 1.5);
+      document.getElementById('detail-original-price').textContent = formatRupiah(origPrice);
+      const discountPct = Math.round(((origPrice - prod.price) / origPrice) * 100);
+      document.getElementById('detail-discount-badge').textContent = `Hemat ${discountPct}%`;
+
       document.getElementById('detail-badge-condition').textContent = prod.conditionBadge || prod.condition;
       document.getElementById('detail-badge-faculty').textContent = prod.faculty;
       document.getElementById('detail-badge-category').textContent = prod.categoryLabel;
+
+      // Deskripsi & toggle baca selengkapnya
+      const descEl = document.getElementById('detail-desc');
+      const toggleDescBtn = document.getElementById('btn-toggle-desc');
+      descEl.textContent = prod.description;
+      if (prod.description.length > 120) {
+        toggleDescBtn.style.display = 'inline-block';
+        let expanded = false;
+        const shortText = prod.description.slice(0, 120) + '...';
+        descEl.textContent = shortText;
+        toggleDescBtn.addEventListener('click', () => {
+          expanded = !expanded;
+          descEl.textContent = expanded ? prod.description : shortText;
+          toggleDescBtn.textContent = expanded ? 'Sembunyikan ↑' : 'Baca selengkapnya ↓';
+        });
+      }
+
+      // Galeri Foto Realpic
+      const mainImg = document.getElementById('detail-img');
+      const thumbsContainer = document.getElementById('detail-gallery-thumbs');
+      const images = (prod.images && prod.images.length > 0) ? prod.images : ['assets/img/products/prd-001-1.jpg'];
+      mainImg.src = `../${images[0]}`;
+
+      thumbsContainer.innerHTML = images.map((imgSrc, idx) => `
+        <button type="button" class="gallery-thumb-btn ${idx === 0 ? 'active' : ''}" data-idx="${idx}" aria-label="Lihat foto ${idx + 1}">
+          <img src="../${imgSrc}" alt="Thumbnail ${idx + 1}" />
+        </button>
+      `).join('');
+
+      thumbsContainer.querySelectorAll('.gallery-thumb-btn').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          thumbsContainer.querySelectorAll('.gallery-thumb-btn').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+          const idx = Number(thumb.getAttribute('data-idx'));
+          mainImg.style.opacity = '0.4';
+          mainImg.src = `../${images[idx]}`;
+          setTimeout(() => { mainImg.style.opacity = '1'; }, 100);
+        });
+      });
 
       // Seller Info
       document.getElementById('seller-name').textContent = prod.seller.name;
       document.getElementById('seller-faculty').textContent = prod.seller.faculty;
       document.getElementById('seller-avatar').textContent = prod.seller.avatar || 'M';
       document.getElementById('seller-active-items').textContent = `${prod.seller.activeItems || 3} Barang Aktif`;
+
+      // Variants (Pilihan Ukuran & Warna)
+      const variantsSection = document.getElementById('detail-variants-section');
+      const sizesRow = document.getElementById('sizes-row-container');
+      const sizesList = document.getElementById('sizes-list');
+      const colorsRow = document.getElementById('colors-row-container');
+      const colorsList = document.getElementById('colors-list');
+
+      let hasVariants = false;
+
+      if (prod.sizes && prod.sizes.length > 0) {
+        hasVariants = true;
+        sizesRow.style.display = 'block';
+        sizesList.innerHTML = prod.sizes.map((sz, idx) => `
+          <button type="button" class="variant-size-chip ${idx === 0 ? 'active' : ''}">${sz}</button>
+        `).join('');
+
+        sizesList.querySelectorAll('.variant-size-chip').forEach(btn => {
+          btn.addEventListener('click', () => {
+            sizesList.querySelectorAll('.variant-size-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+      }
+
+      if (prod.colors && prod.colors.length > 0) {
+        hasVariants = true;
+        colorsRow.style.display = 'block';
+        colorsList.innerHTML = prod.colors.map((col, idx) => `
+          <button type="button" class="variant-color-swatch ${idx === 0 ? 'active' : ''}" style="background-color: ${col};" title="Warna ${col}" aria-label="Warna"></button>
+        `).join('');
+
+        colorsList.querySelectorAll('.variant-color-swatch').forEach(btn => {
+          btn.addEventListener('click', () => {
+            colorsList.querySelectorAll('.variant-color-swatch').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+      }
+
+      if (hasVariants) {
+        variantsSection.style.display = 'block';
+      }
 
       // Favorit State
       const favBtn = document.getElementById('btn-fav-detail');
@@ -354,7 +567,7 @@
 
     function checkExistingOffer(prod) {
       const offers = getOffers();
-      const existing = offers.find(o => o.productId === prod.id);
+      const existing = offers.find(o => o.productId === prod.id && o.buyerId === 'usr-maba-01');
       const actionContainer = document.getElementById('main-action-container');
 
       if (existing) {
@@ -368,31 +581,63 @@
               <span>💬 Lanjut ke WhatsApp Penjual</span>
             </a>
           `;
-        } else if (existing.status === 'menunggu') {
+        } else if (existing.status === 'ditawar_balik') {
           actionContainer.innerHTML = `
-            <a href="tawaran.html" class="btn-pill btn-pill-outline w-100" style="font-size:1rem; height:50px; border-color:var(--ink);">
-              <span>⏳ Menunggu Respon Penjual (${formatRupiah(existing.hargaTawar)})</span>
+            <a href="tawaran.html" class="btn-pill btn-pill-lime w-100" style="font-size:0.95rem; height:50px;">
+              <span>🔄 Penjual Tawar Balik: ${formatRupiah(existing.hargaBalik || existing.hargaTawar)} (Cek)</span>
             </a>
           `;
+        } else if (existing.status === 'menunggu') {
+          actionContainer.innerHTML = `
+            <div class="d-flex gap-2 w-100">
+              <a href="tawaran.html" class="btn-pill btn-pill-outline flex-grow-1" style="font-size:0.88rem; height:50px; border-color:var(--ink);">
+                <span>⏳ Tawaran Diajukan (${formatRupiah(existing.hargaTawar)})</span>
+              </a>
+              <button type="button" id="btn-cancel-offer" class="btn-circle btn-circle-white" style="height:50px; width:50px; min-width:50px;" title="Batalkan Tawaran">
+                ${icons.x(20, 2.5)}
+              </button>
+            </div>
+          `;
+          document.getElementById('btn-cancel-offer')?.addEventListener('click', () => {
+            if (confirm('Batalkan tawaran ini?')) {
+              const allOffers = getOffers().filter(o => o.id !== existing.id);
+              saveOffers(allOffers);
+              showToast('Tawaran berhasil dibatalkan.');
+              checkExistingOffer(prod);
+            }
+          });
+        } else if (existing.status === 'ditolak') {
+          actionContainer.innerHTML = `
+            <button type="button" id="btn-re-offer" class="btn-pill btn-pill-lime w-100" style="font-size:0.95rem; height:50px;">
+              <span>❌ Tawaran Ditolak · Ajukan Tawaran Baru</span>
+            </button>
+          `;
+          document.getElementById('btn-re-offer')?.addEventListener('click', () => {
+            document.getElementById('offer-modal-backdrop').classList.add('active');
+            document.getElementById('offer-price-input').value = currentProduct.price;
+          });
         }
+      } else {
+        // Belum ada tawaran
+        actionContainer.innerHTML = `
+          <button type="button" id="btn-open-offer" class="btn-pill btn-pill-lime w-100" style="font-size: 1.05rem; height: 50px;">
+            <span>Tawar Harga Barang</span>
+          </button>
+        `;
+        document.getElementById('btn-open-offer').addEventListener('click', () => {
+          document.getElementById('offer-modal-backdrop').classList.add('active');
+          document.getElementById('offer-price-input').value = currentProduct.price;
+        });
       }
     }
 
     function setupOfferModal() {
       const backdrop = document.getElementById('offer-modal-backdrop');
-      const openBtn = document.getElementById('btn-open-offer');
       const closeBtn = document.getElementById('btn-close-sheet');
       const priceInput = document.getElementById('offer-price-input');
       const noteInput = document.getElementById('offer-note-input');
       const charCounter = document.getElementById('char-counter');
       const submitBtn = document.getElementById('btn-submit-offer');
-
-      if (openBtn) {
-        openBtn.addEventListener('click', () => {
-          backdrop.classList.add('active');
-          priceInput.value = currentProduct.price;
-        });
-      }
 
       closeBtn.addEventListener('click', () => backdrop.classList.remove('active'));
       backdrop.addEventListener('click', (e) => {
@@ -423,17 +668,23 @@
           return;
         }
 
-        const offers = getOffers();
+        if (val > currentProduct.price) {
+          alert('Harga tawaran tidak boleh melebihi harga listing awal.');
+          return;
+        }
+
+        const offers = getOffers().filter(o => !(o.productId === currentProduct.id && o.buyerId === 'usr-maba-01'));
         const newOffer = {
           id: `${currentProduct.id}_usr-maba-01`,
           productId: currentProduct.id,
           productTitle: currentProduct.title,
-          productImage: currentProduct.images[0],
+          productImage: currentProduct.images[0] || 'assets/img/products/prd-001-1.jpg',
           sellerId: 'usr-seller',
           sellerName: currentProduct.seller.name,
           sellerPhone: '628123456789',
           buyerId: 'usr-maba-01',
           buyerName: 'Zahra Putri',
+          buyerPhone: '6281234567890',
           hargaListing: currentProduct.price,
           hargaTawar: val,
           catatan: noteInput.value.trim(),
@@ -442,8 +693,8 @@
           expiresAt: new Date(Date.now() + 3600000 * 48).toISOString()
         };
 
-        offers.push(newOffer);
-        localStorage.setItem('prelovedu_offers', JSON.stringify(offers));
+        offers.unshift(newOffer);
+        saveOffers(offers);
 
         backdrop.classList.remove('active');
         showToast('🎉 Tawaran berhasil dikirim ke penjual!');

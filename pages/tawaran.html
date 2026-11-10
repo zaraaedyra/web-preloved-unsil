@@ -36,11 +36,22 @@
       border-radius: var(--radius-card);
       padding: 1.25rem;
       box-shadow: var(--shadow-flat);
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      transition: transform var(--transition-fast);
+    }
+
+    .offer-thumb-img {
+      width: 58px;
+      height: 58px;
+      object-fit: cover;
+      background: var(--lilac);
+      border: 1.5px solid var(--ink);
+      border-radius: 14px;
+      flex-shrink: 0;
     }
   </style>
 </head>
-<body>
+<body style="padding-bottom: 95px;">
 
   <!-- Top Header Mount -->
   <div id="header-mount"></div>
@@ -49,7 +60,7 @@
     <!-- Judul Halaman -->
     <div class="d-flex align-items-center justify-content-between mb-4">
       <div class="d-flex align-items-center gap-3">
-        <a href="../index.html" class="btn-circle btn-circle-white" aria-label="Kembali ke Beranda">
+        <a href="../index.html" class="btn-circle btn-circle-white" aria-label="Kembali ke Beranda" title="Kembali ke Beranda">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
@@ -73,20 +84,19 @@
     <div class="p-3 mb-4 d-flex align-items-center gap-3" style="background:#f4f9e6; border:var(--border-thick); border-radius:var(--radius-inner);">
       <span style="font-size:1.4rem;">💡</span>
       <div style="font-size:0.85rem; color:var(--ink);">
-        <strong>Gerbang Kontak PRELOVEDU:</strong> Tawaran mengunci kesepakatan harga awal secara transparan. Begitu tawaran disetujui, nomor WhatsApp kedua belah pihak akan terbuka untuk menentukan jadwal COD.
+        <strong>Gerbang Kontak PRELOVEDU:</strong> Tawaran mengunci kesepakatan harga awal secara transparan. Begitu tawaran disetujui, nomor WhatsApp kedua belah pihak akan terbuka untuk menentukan jadwal COD di kampus.
       </div>
     </div>
 
     <!-- Daftar List Tawaran -->
     <div id="offers-list-container">
-      <!-- Loading Skeleton -->
       <div class="skeleton-box" style="height: 140px; border-radius: var(--radius-card); margin-bottom: 1rem;"></div>
     </div>
 
     <!-- Panel Demo Interaktif untuk Sidang/Presentasi -->
     <div class="card p-3 mt-4 mb-5" style="border: 2px dashed var(--ink); border-radius: var(--radius-card); background: #fafafa;">
       <div class="d-flex align-items-center justify-content-between mb-2">
-        <strong style="font-size: 0.9rem;">🛠️ Simulator Respon Penjual (Khusus Demo Presentasi)</strong>
+        <strong style="font-size: 0.9rem;">🛠️ Simulator Cepat Respon (Khusus Demo Presentasi)</strong>
       </div>
       <p style="font-size: 0.8rem; color: var(--ink-muted); margin-bottom: 0.75rem;">
         Gunakan tombol di bawah untuk menguji alur tawar tanpa perlu login akun kedua:
@@ -101,6 +111,9 @@
         <button type="button" class="btn-pill btn-pill-ink" id="demo-reject" style="min-height: 38px; font-size: 0.82rem; padding: 0.4rem 1rem;">
           Simulasikan: Tolak Tawaran
         </button>
+        <button type="button" class="btn-pill btn-pill-outline" id="demo-reset" style="min-height: 38px; font-size: 0.82rem; padding: 0.4rem 1rem;">
+          Reset Data Demo
+        </button>
       </div>
     </div>
   </main>
@@ -111,13 +124,13 @@
   <script type="module">
     import { renderHeader, renderBottomNav, showToast } from '../assets/js/components/navbar.js';
     import { renderFavicon } from '../assets/js/components/logo.js';
-    import { getOffers } from '../assets/js/services/storage.js';
+    import { getOffers, saveOffers, updateOffer, getCurrentUser, initStorage } from '../assets/js/services/storage.js';
     import { formatRupiah } from '../assets/js/components/product-card.js';
     import { icons } from '../assets/js/components/icons.js';
 
     let currentTab = 'sent'; // 'sent' | 'inbox'
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function init() {
       // Favicon
       const linkFavicon = document.createElement('link');
       linkFavicon.rel = 'icon';
@@ -132,7 +145,13 @@
       setupTabs();
       setupDemoControls();
       renderOffers();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
 
     function setupTabs() {
       const btnSent = document.getElementById('tab-btn-sent');
@@ -156,116 +175,283 @@
     function renderOffers() {
       const container = document.getElementById('offers-list-container');
       const allOffers = getOffers();
+      const currentUser = getCurrentUser();
 
-      if (allOffers.length === 0) {
+      // Filter berdasarkan Tab
+      let offers = [];
+      if (currentTab === 'sent') {
+        offers = allOffers.filter(o => o.buyerId === currentUser.id || !o.buyerId);
+      } else {
+        offers = allOffers.filter(o => o.sellerId === currentUser.id);
+      }
+
+      if (offers.length === 0) {
         container.innerHTML = `
           <div class="empty-state-card">
             <div class="empty-state-icon">
               ${icons.tag(32, 2.5)}
             </div>
-            <h3 style="font-family:var(--font-serif); font-size:1.35rem; margin-bottom:0.5rem;">Belum Ada Tawaran</h3>
+            <h3 style="font-family:var(--font-serif); font-size:1.35rem; margin-bottom:0.5rem;">
+              ${currentTab === 'sent' ? 'Belum Ada Tawaran Terkirim' : 'Belum Ada Tawaran Masuk'}
+            </h3>
             <p style="color:var(--ink-muted); font-size:0.9rem; margin-bottom:1.5rem;">
-              Cari barang yang kamu butuhkan dan ajukan harga tawar pertamamu!
+              ${currentTab === 'sent' 
+                ? 'Cari barang yang kamu suka di katalog dan ajukan tawaran pertamamu!' 
+                : 'Iklan barang yang kamu pasang belum ada tawaran dari mahasiswa lain.'}
             </p>
-            <a href="../index.html" class="btn-pill btn-pill-lime">Mulai Menawar</a>
+            <a href="${currentTab === 'sent' ? '../index.html' : 'jual.html'}" class="btn-pill btn-pill-lime">
+              ${currentTab === 'sent' ? 'Jelajahi Katalog' : 'Pasang Iklan Sekarang'}
+            </a>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = allOffers.map(offer => {
+      container.innerHTML = offers.map(offer => {
         let statusBadge = '';
         let actionArea = '';
 
-        if (offer.status === 'diterima') {
-          statusBadge = '<span class="badge-pill badge-pill-lime">✓ Tawaran Disetujui</span>';
-          const waMessage = encodeURIComponent(`Halo kak ${offer.sellerName}, tawaran aku untuk "${offer.productTitle}" di PRELOVEDU disetujui di ${formatRupiah(offer.hargaTawar)}. Kapan bisa COD di kampus?`);
-          actionArea = `
-            <a href="https://wa.me/${offer.sellerPhone || '628123456789'}?text=${waMessage}" target="_blank" rel="noopener" class="btn-pill btn-pill-lime" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">
-              💬 Lanjut ke WhatsApp
-            </a>
-          `;
-        } else if (offer.status === 'ditawar_balik') {
-          statusBadge = '<span class="badge-pill badge-pill-lilac">🔄 Penjual Tawar Balik</span>';
-          actionArea = `
-            <div class="d-flex gap-2">
-              <button type="button" class="btn-pill btn-pill-lime btn-accept-counter" data-id="${offer.id}" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
-                Terima Tawaran Balik
+        if (currentTab === 'sent') {
+          // TAB TERKIRIM (Saya Pembeli)
+          if (offer.status === 'diterima') {
+            statusBadge = '<span class="badge-pill badge-pill-lime">✓ Tawaran Disetujui</span>';
+            const waMessage = encodeURIComponent(`Halo kak ${offer.sellerName}, tawaran aku untuk "${offer.productTitle}" di PRELOVEDU disetujui di ${formatRupiah(offer.hargaTawar)}. Kapan bisa COD di kampus?`);
+            actionArea = `
+              <a href="https://wa.me/${offer.sellerPhone || '628123456789'}?text=${waMessage}" target="_blank" rel="noopener" class="btn-pill btn-pill-lime" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">
+                💬 Lanjut ke WhatsApp Penjual
+              </a>
+            `;
+          } else if (offer.status === 'ditawar_balik') {
+            const counterPrice = offer.hargaBalik || Math.round(offer.hargaListing * 0.9);
+            statusBadge = `<span class="badge-pill badge-pill-lilac">🔄 Ditawar Balik: ${formatRupiah(counterPrice)}</span>`;
+            actionArea = `
+              <div class="d-flex gap-2">
+                <button type="button" class="btn-pill btn-pill-lime btn-accept-counter" data-id="${offer.id}" data-price="${counterPrice}" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
+                  Terima Tawaran Balik
+                </button>
+                <button type="button" class="btn-pill btn-pill-outline btn-reject-counter" data-id="${offer.id}" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
+                  Tolak
+                </button>
+              </div>
+            `;
+          } else if (offer.status === 'ditolak') {
+            statusBadge = '<span class="badge-pill" style="background:#f1f1ee; color:var(--ink-muted);">✕ Ditolak</span>';
+            actionArea = `
+              <a href="detail.html?id=${offer.productId}" class="btn-pill btn-pill-lime" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
+                Tawar Ulang
+              </a>
+            `;
+          } else {
+            statusBadge = '<span class="badge-pill" style="background:var(--status-waiting); color:var(--status-waiting-text);">⏳ Menunggu Balasan Penjual</span>';
+            actionArea = `
+              <button type="button" class="btn-pill btn-pill-outline btn-cancel-offer" data-id="${offer.id}" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
+                Batalkan Tawaran
               </button>
-            </div>
-          `;
-        } else if (offer.status === 'ditolak') {
-          statusBadge = '<span class="badge-pill" style="background:#f1f1ee; color:var(--ink-muted);">✕ Ditolak</span>';
+            `;
+          }
         } else {
-          statusBadge = '<span class="badge-pill" style="background:var(--status-waiting); color:var(--status-waiting-text);">⏳ Menunggu Tanggapan</span>';
+          // TAB MASUK (Saya Penjual)
+          if (offer.status === 'diterima') {
+            statusBadge = '<span class="badge-pill badge-pill-lime">✓ Anda Menyetujui</span>';
+            const waMessage = encodeURIComponent(`Halo ${offer.buyerName}, tawaranmu untuk "${offer.productTitle}" sudah saya setujui di ${formatRupiah(offer.hargaTawar)}. Mau COD jam berapa di kampus?`);
+            actionArea = `
+              <a href="https://wa.me/${offer.buyerPhone || '628123456789'}?text=${waMessage}" target="_blank" rel="noopener" class="btn-pill btn-pill-lime" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">
+                💬 Hubungi Pembeli (WhatsApp)
+              </a>
+            `;
+          } else if (offer.status === 'ditawar_balik') {
+            statusBadge = '<span class="badge-pill badge-pill-lilac">🔄 Menunggu Respon Pembeli</span>';
+            actionArea = `<span style="font-size:0.82rem; color:var(--ink-muted);">Anda menawarkan balik di ${formatRupiah(offer.hargaBalik || offer.hargaTawar)}</span>`;
+          } else if (offer.status === 'ditolak') {
+            statusBadge = '<span class="badge-pill" style="background:#f1f1ee; color:var(--ink-muted);">✕ Anda Menolak</span>';
+          } else {
+            // Menunggu respon dari penjual
+            statusBadge = '<span class="badge-pill" style="background:var(--lime); color:var(--ink);">📥 Perlu Respon Anda</span>';
+            actionArea = `
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn-pill btn-pill-lime btn-seller-accept" data-id="${offer.id}" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
+                  Terima (${formatRupiah(offer.hargaTawar)})
+                </button>
+                <button type="button" class="btn-pill btn-pill-outline btn-seller-counter" data-id="${offer.id}" data-listing="${offer.hargaListing}" data-tawar="${offer.hargaTawar}" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
+                  Tawar Balik
+                </button>
+                <button type="button" class="btn-pill btn-pill-ink btn-seller-reject" data-id="${offer.id}" style="min-height:36px; padding:0.35rem 0.85rem; font-size:0.82rem;">
+                  Tolak
+                </button>
+              </div>
+            `;
+          }
         }
 
+        const lawanText = currentTab === 'sent' 
+          ? `Penjual: <strong>${offer.sellerName}</strong>`
+          : `Pembeli: <strong>${offer.buyerName}</strong>`;
+
         return `
-          <article class="offer-card">
-            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-              <div class="d-flex align-items-center gap-2">
-                <img src="../${offer.productImage || 'assets/img/products/calculus-book.svg'}" alt="" style="width:48px; height:48px; object-fit:contain; background:var(--lilac); border:1.5px solid var(--ink); border-radius:12px; padding:4px;" />
+          <article class="offer-card" data-id="${offer.id}">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2 flex-wrap">
+              <div class="d-flex align-items-center gap-3">
+                <img src="../${offer.productImage || 'assets/img/products/prd-001-1.jpg'}" alt="${offer.productTitle}" class="offer-thumb-img" />
                 <div>
-                  <h4 style="font-family:var(--font-serif); font-size:1.1rem; margin-bottom:0.15rem;">
+                  <h4 style="font-family:var(--font-serif); font-size:1.15rem; margin-bottom:0.15rem;">
                     <a href="detail.html?id=${offer.productId}">${offer.productTitle}</a>
                   </h4>
-                  <div style="font-size:0.78rem; color:var(--ink-muted);">Lawan Transaksi: <strong>${offer.sellerName}</strong></div>
+                  <div style="font-size:0.8rem; color:var(--ink-muted);">${lawanText}</div>
                 </div>
               </div>
-              ${statusBadge}
+              <div>${statusBadge}</div>
             </div>
 
-            <div class="p-2 mb-2" style="background:#f8f8f8; border-radius:var(--radius-sm); border:1px solid rgba(42,42,42,0.1); font-size:0.82rem;">
+            <div class="p-3 mb-2" style="background:#f8f8f8; border-radius:var(--radius-sm); border:1px solid rgba(42,42,42,0.1); font-size:0.85rem;">
               <div class="d-flex justify-content-between">
                 <span>Harga Listing Awal:</span>
                 <span style="text-decoration:line-through; color:var(--ink-muted);">${formatRupiah(offer.hargaListing)}</span>
               </div>
               <div class="d-flex justify-content-between mt-1">
                 <strong>Harga yang Diajukan:</strong>
-                <strong style="font-family:var(--font-serif); font-size:1.05rem; color:var(--ink);">${formatRupiah(offer.hargaTawar)}</strong>
+                <strong style="font-family:var(--font-serif); font-size:1.1rem; color:var(--ink);">${formatRupiah(offer.hargaTawar)}</strong>
               </div>
+              ${offer.hargaBalik ? `
+                <div class="d-flex justify-content-between mt-1 pt-1" style="border-top: 1px dashed rgba(42,42,42,0.15); color: #8c428e;">
+                  <strong>Harga Tawar Balik:</strong>
+                  <strong style="font-family:var(--font-serif); font-size:1.1rem;">${formatRupiah(offer.hargaBalik)}</strong>
+                </div>
+              ` : ''}
               ${offer.catatan ? `<div class="mt-2 text-muted fst-italic">"${offer.catatan}"</div>` : ''}
             </div>
 
-            <div class="d-flex align-items-center justify-content-between pt-2">
-              <span style="font-size:0.75rem; color:var(--ink-muted);">Kedaluwarsa dalam 48 jam</span>
+            <div class="d-flex align-items-center justify-content-between pt-2 flex-wrap gap-2">
+              <span style="font-size:0.75rem; color:var(--ink-muted);">⏱ Kedaluwarsa dalam 48 jam</span>
               <div>${actionArea}</div>
             </div>
           </article>
         `;
       }).join('');
+
+      attachOfferEventListeners();
+    }
+
+    function attachOfferEventListeners() {
+      // 1. Terima Tawaran Balik (Pembeli)
+      document.querySelectorAll('.btn-accept-counter').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const finalPrice = Number(btn.getAttribute('data-price'));
+          updateOffer(id, { status: 'diterima', hargaTawar: finalPrice });
+          showToast('✅ Tawaran balik diterima! WhatsApp kedua belah pihak terbuka.');
+          renderOffers();
+        });
+      });
+
+      // 2. Tolak Tawaran Balik (Pembeli)
+      document.querySelectorAll('.btn-reject-counter').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          updateOffer(id, { status: 'ditolak' });
+          showToast('Tawaran telah ditolak.');
+          renderOffers();
+        });
+      });
+
+      // 3. Batalkan Tawaran (Pembeli)
+      document.querySelectorAll('.btn-cancel-offer').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          if (confirm('Batalkan pengajuan tawaran ini?')) {
+            const allOffers = getOffers().filter(o => o.id !== id);
+            saveOffers(allOffers);
+            showToast('Tawaran berhasil dibatalkan.');
+            renderOffers();
+          }
+        });
+      });
+
+      // 4. Penjual: Terima Tawaran
+      document.querySelectorAll('.btn-seller-accept').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          updateOffer(id, { status: 'diterima' });
+          showToast('🎉 Tawaran pembeli disetujui! Kontak WhatsApp terbuka.');
+          renderOffers();
+        });
+      });
+
+      // 5. Penjual: Tawar Balik
+      document.querySelectorAll('.btn-seller-counter').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const listing = Number(btn.getAttribute('data-listing'));
+          const tawar = Number(btn.getAttribute('data-tawar'));
+          const saran = Math.round((listing + tawar) / 2);
+          
+          const input = prompt(`Masukkan nominal tawar balik untuk pembeli (Rp):\n(Listing: ${formatRupiah(listing)}, Tawaran: ${formatRupiah(tawar)})`, saran);
+          if (input) {
+            const num = Number(input.replace(/[^0-9]/g, ''));
+            if (num > 0 && num <= listing) {
+              updateOffer(id, { status: 'ditawar_balik', hargaBalik: num });
+              showToast(`🔄 Berhasil menawar balik di ${formatRupiah(num)}`);
+              renderOffers();
+            } else {
+              alert('Nominal tawar balik harus di atas 0 dan tidak melebihi harga listing.');
+            }
+          }
+        });
+      });
+
+      // 6. Penjual: Tolak Tawaran
+      document.querySelectorAll('.btn-seller-reject').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          if (confirm('Tolak tawaran dari pembeli ini?')) {
+            updateOffer(id, { status: 'ditolak' });
+            showToast('Tawaran telah ditolak.');
+            renderOffers();
+          }
+        });
+      });
     }
 
     function setupDemoControls() {
+      // Demo Terima
       document.getElementById('demo-accept').addEventListener('click', () => {
         const offers = getOffers();
         if (offers.length > 0) {
           offers[0].status = 'diterima';
-          localStorage.setItem('prelovedu_offers', JSON.stringify(offers));
-          showToast('✅ Tawaran berhasil disetujui! Tombol WhatsApp terbuka.');
+          saveOffers(offers);
+          showToast('✅ Tawaran pertama disetujui! Tombol WhatsApp terbuka.');
           renderOffers();
         }
       });
 
+      // Demo Tawar Balik
       document.getElementById('demo-counter').addEventListener('click', () => {
         const offers = getOffers();
         if (offers.length > 0) {
           offers[0].status = 'ditawar_balik';
-          offers[0].hargaTawar = Math.round(offers[0].hargaListing * 0.92);
-          localStorage.setItem('prelovedu_offers', JSON.stringify(offers));
-          showToast('🔄 Penjual menawar balik ke Rp ' + offers[0].hargaTawar.toLocaleString('id-ID'));
+          offers[0].hargaBalik = Math.round(offers[0].hargaListing * 0.92);
+          saveOffers(offers);
+          showToast('🔄 Penjual menawar balik ke ' + formatRupiah(offers[0].hargaBalik));
           renderOffers();
         }
       });
 
+      // Demo Tolak
       document.getElementById('demo-reject').addEventListener('click', () => {
         const offers = getOffers();
         if (offers.length > 0) {
           offers[0].status = 'ditolak';
-          localStorage.setItem('prelovedu_offers', JSON.stringify(offers));
-          showToast('Tawaran telah ditolak.');
+          saveOffers(offers);
+          showToast('Tawaran pertama telah ditolak.');
           renderOffers();
         }
+      });
+
+      // Demo Reset Data
+      document.getElementById('demo-reset').addEventListener('click', () => {
+        localStorage.removeItem('prelovedu_offers');
+        initStorage();
+        showToast('🔄 Data tawaran berhasil di-reset ke default.');
+        renderOffers();
       });
     }
   </script>

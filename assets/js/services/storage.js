@@ -3,7 +3,7 @@
 
 import { dummyProducts } from '../data/dummy-products.js';
 
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   PRODUCTS: 'prelovedu_products',
   FAVORITES: 'prelovedu_favorites',
   OFFERS: 'prelovedu_offers',
@@ -11,7 +11,7 @@ const STORAGE_KEYS = {
 };
 
 // Simulasi user mahasiswa yang aktif (Bisa diubah lewat halaman profil/login)
-const DEFAULT_USER = {
+export const DEFAULT_USER = {
   id: 'usr-maba-01',
   name: 'Zahra Putri',
   faculty: 'Informatika 2024',
@@ -22,39 +22,100 @@ const DEFAULT_USER = {
 };
 
 /**
- * Inisialisasi data produk ke LocalStorage jika belum ada
+ * Inisialisasi data produk ke LocalStorage jika belum ada atau jika masih data lama (SVG)
  */
 export function initStorage() {
-  if (!localStorage.getItem(STORAGE_KEYS.PRODUCTS)) {
+  const currentProds = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
+  if (!currentProds || currentProds.includes('.svg')) {
     localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(dummyProducts));
   }
+
   if (!localStorage.getItem(STORAGE_KEYS.FAVORITES)) {
     // Inisialisasi awal dengan 2 produk favorit contoh
     localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(['prd-001', 'prd-003']));
   }
-  if (!localStorage.getItem(STORAGE_KEYS.OFFERS)) {
-    // Tawaran contoh untuk simulasi alur Tawar
+
+  const currentOffers = localStorage.getItem(STORAGE_KEYS.OFFERS);
+  if (!currentOffers || currentOffers.includes('.svg')) {
+    // Tawaran contoh untuk simulasi alur Tawar lengkap (Terkirim & Masuk)
     const initialOffers = [
       {
         id: 'prd-002_usr-maba-01',
         productId: 'prd-002',
         productTitle: 'Jas Laboratorium Kimia FMIPA Bahan Katun Tebal Size L',
-        productImage: 'assets/img/products/lab-coat.svg',
+        productImage: 'assets/img/products/prd-002-1.jpg',
         sellerId: 'usr-anisa',
         sellerName: 'Anisa Rahmawati',
         sellerPhone: '628987654321',
         buyerId: 'usr-maba-01',
         buyerName: 'Zahra Putri',
+        buyerPhone: '6281234567890',
         hargaListing: 45000,
         hargaTawar: 40000,
         catatan: 'Bisa COD di depan gedung rektorat kak?',
-        status: 'diterima', // menunggu | ditawar_balik | diterima | ditolak | kedaluwarsa
+        status: 'diterima', // menunggu | ditawar_balik | diterima | ditolak | kedaluwarsa | dibatalkan
         createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
         expiresAt: new Date(Date.now() + 3600000 * 44).toISOString()
+      },
+      {
+        id: 'prd-003_usr-maba-01',
+        productId: 'prd-003',
+        productTitle: 'Hoodie Kampus Vintage Boxy Cut Sage Green Unisex',
+        productImage: 'assets/img/products/prd-003-1.jpg',
+        sellerId: 'usr-dimas',
+        sellerName: 'Dimas Setiawan',
+        sellerPhone: '6281399887766',
+        buyerId: 'usr-maba-01',
+        buyerName: 'Zahra Putri',
+        buyerPhone: '6281234567890',
+        hargaListing: 85000,
+        hargaTawar: 70000,
+        hargaBalik: 78000,
+        catatan: 'Kalau 70rb boleh kak? Buat ganti hoodie kuliah.',
+        status: 'ditawar_balik',
+        createdAt: new Date(Date.now() - 3600000 * 8).toISOString(),
+        expiresAt: new Date(Date.now() + 3600000 * 40).toISOString()
+      },
+      {
+        id: 'prd-004_usr-maba-01',
+        productId: 'prd-004',
+        productTitle: 'Kalkulator Saintifik Casio fx-991EX ClassWiz Original',
+        productImage: 'assets/img/products/prd-004-1.jpg',
+        sellerId: 'usr-fauzan',
+        sellerName: 'Fauzan Hidayat',
+        sellerPhone: '6281122334455',
+        buyerId: 'usr-maba-01',
+        buyerName: 'Zahra Putri',
+        buyerPhone: '6281234567890',
+        hargaListing: 180000,
+        hargaTawar: 160000,
+        catatan: 'Bisa dicek solar cell-nya pas COD ya kak.',
+        status: 'menunggu',
+        createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+        expiresAt: new Date(Date.now() + 3600000 * 46).toISOString()
+      },
+      {
+        id: 'prd-001_usr-budi',
+        productId: 'prd-001',
+        productTitle: 'Kalkulus Purcell Edisi 9 Jilid 1',
+        productImage: 'assets/img/products/prd-001-1.jpg',
+        sellerId: 'usr-maba-01',
+        sellerName: 'Zahra Putri',
+        sellerPhone: '6281234567890',
+        buyerId: 'usr-budi',
+        buyerName: 'Budi Santoso (Teknik Mesin 2024)',
+        buyerPhone: '6287766554433',
+        hargaListing: 65000,
+        hargaTawar: 55000,
+        catatan: 'Halo kak Zahra, apakah boleh 55rb? COD perpustakaan pusat besok siang.',
+        status: 'menunggu',
+        createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+        expiresAt: new Date(Date.now() + 3600000 * 45).toISOString()
       }
     ];
     localStorage.setItem(STORAGE_KEYS.OFFERS, JSON.stringify(initialOffers));
   }
+
   if (!localStorage.getItem(STORAGE_KEYS.USER)) {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(DEFAULT_USER));
   }
@@ -134,6 +195,16 @@ export function getCurrentUser() {
 }
 
 /**
+ * Update data profil pengguna
+ */
+export function updateCurrentUser(patch) {
+  const user = { ...getCurrentUser(), ...patch };
+  localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+  window.dispatchEvent(new CustomEvent('userUpdated', { detail: user }));
+  return user;
+}
+
+/**
  * Mendapatkan semua tawaran
  */
 export function getOffers() {
@@ -143,6 +214,28 @@ export function getOffers() {
   } catch (e) {
     return [];
   }
+}
+
+/**
+ * Simpan daftar tawaran
+ */
+export function saveOffers(offers) {
+  localStorage.setItem(STORAGE_KEYS.OFFERS, JSON.stringify(offers));
+  window.dispatchEvent(new CustomEvent('offersUpdated', { detail: offers }));
+}
+
+/**
+ * Update satu tawaran berdasarkan ID
+ */
+export function updateOffer(offerId, patch) {
+  const offers = getOffers();
+  const idx = offers.findIndex(o => o.id === offerId);
+  if (idx !== -1) {
+    offers[idx] = { ...offers[idx], ...patch, updatedAt: new Date().toISOString() };
+    saveOffers(offers);
+    return offers[idx];
+  }
+  return null;
 }
 
 /**

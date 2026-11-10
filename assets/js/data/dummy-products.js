@@ -20,7 +20,7 @@ export const dummyProducts = [
       activeItems: 4,
       avatar: 'RP'
     },
-    images: ['assets/img/products/calculus-book.svg'],
+    images: ['assets/img/products/prd-001-1.jpg', 'assets/img/products/prd-001-2.jpg'],
     colors: ['#2A2A2A', '#0D5C75'],
     sizes: [],
     featured: true,
@@ -44,7 +44,7 @@ export const dummyProducts = [
       activeItems: 2,
       avatar: 'AR'
     },
-    images: ['assets/img/products/lab-coat.svg'],
+    images: ['assets/img/products/prd-002-1.jpg', 'assets/img/products/prd-002-2.jpg'],
     colors: ['#FFFFFF'],
     sizes: ['L'],
     featured: true,
@@ -68,7 +68,7 @@ export const dummyProducts = [
       activeItems: 6,
       avatar: 'DS'
     },
-    images: ['assets/img/products/hoodie-sage.svg'],
+    images: ['assets/img/products/prd-003-1.jpg', 'assets/img/products/prd-003-2.jpg'],
     colors: ['#7D9D8B', '#2A2A2A'],
     sizes: ['XL', 'L'],
     featured: true,
@@ -92,7 +92,7 @@ export const dummyProducts = [
       activeItems: 3,
       avatar: 'FH'
     },
-    images: ['assets/img/products/calculator.svg'],
+    images: ['assets/img/products/prd-004-1.jpg', 'assets/img/products/prd-004-2.jpg'],
     colors: ['#2A2A2A'],
     sizes: [],
     featured: true,
@@ -116,7 +116,7 @@ export const dummyProducts = [
       activeItems: 5,
       avatar: 'BS'
     },
-    images: ['assets/img/products/jacket-parka.svg'],
+    images: ['assets/img/products/prd-005-1.jpg', 'assets/img/products/prd-005-2.jpg'],
     colors: ['#C2B092', '#3D362C'],
     sizes: ['L'],
     featured: false,
@@ -140,7 +140,7 @@ export const dummyProducts = [
       activeItems: 1,
       avatar: 'NS'
     },
-    images: ['assets/img/products/book-accounting.svg'],
+    images: ['assets/img/products/prd-006-1.jpg', 'assets/img/products/prd-006-2.jpg'],
     colors: ['#8B2635'],
     sizes: [],
     featured: false,
@@ -164,7 +164,7 @@ export const dummyProducts = [
       activeItems: 3,
       avatar: 'AW'
     },
-    images: ['assets/img/products/pants-chino.svg'],
+    images: ['assets/img/products/prd-007-1.jpg', 'assets/img/products/prd-007-2.jpg'],
     colors: ['#2A2A2A', '#4A4A4A'],
     sizes: ['31', '32'],
     featured: false,
@@ -188,7 +188,7 @@ export const dummyProducts = [
       activeItems: 4,
       avatar: 'KJ'
     },
-    images: ['assets/img/products/tshirt-white.svg'],
+    images: ['assets/img/products/prd-008-1.jpg', 'assets/img/products/prd-008-2.jpg'],
     colors: ['#F5F5F0'],
     sizes: ['XL', 'L'],
     featured: false,
@@ -212,7 +212,7 @@ export const dummyProducts = [
       activeItems: 2,
       avatar: 'GM'
     },
-    images: ['assets/img/products/drawing-tube.svg'],
+    images: ['assets/img/products/prd-009-1.jpg', 'assets/img/products/prd-009-2.jpg'],
     colors: ['#2A2A2A'],
     sizes: [],
     featured: false,
@@ -236,7 +236,7 @@ export const dummyProducts = [
       activeItems: 4,
       avatar: 'RP'
     },
-    images: ['assets/img/products/book-physics.svg'],
+    images: ['assets/img/products/prd-010-1.jpg', 'assets/img/products/prd-010-2.jpg'],
     colors: ['#1B4965'],
     sizes: [],
     featured: false,
@@ -260,7 +260,7 @@ export const dummyProducts = [
       activeItems: 3,
       avatar: 'RS'
     },
-    images: ['assets/img/products/jacket-varsity.svg'],
+    images: ['assets/img/products/prd-011-1.jpg', 'assets/img/products/prd-011-2.jpg'],
     colors: ['#1A2A44', '#FFFFFF'],
     sizes: ['L'],
     featured: false,
@@ -284,7 +284,7 @@ export const dummyProducts = [
       activeItems: 4,
       avatar: 'KJ'
     },
-    images: ['assets/img/products/keyboard.svg'],
+    images: ['assets/img/products/prd-012-1.jpg', 'assets/img/products/prd-012-2.jpg'],
     colors: ['#F1F1EF', '#E9C6EA'],
     sizes: [],
     featured: false,
@@ -308,7 +308,7 @@ export const dummyProducts = [
       activeItems: 2,
       avatar: 'TA'
     },
-    images: ['assets/img/products/pants-culotte.svg'],
+    images: ['assets/img/products/prd-013-1.jpg', 'assets/img/products/prd-013-2.jpg'],
     colors: ['#EBE3D5'],
     sizes: ['All Size'],
     featured: false,
@@ -332,7 +332,7 @@ export const dummyProducts = [
       activeItems: 3,
       avatar: 'FH'
     },
-    images: ['assets/img/products/hoodie-black.svg'],
+    images: ['assets/img/products/prd-014-1.jpg', 'assets/img/products/prd-014-2.jpg'],
     colors: ['#2A2A2A'],
     sizes: ['L', 'M'],
     featured: false,
@@ -356,7 +356,7 @@ export const dummyProducts = [
       activeItems: 2,
       avatar: 'DL'
     },
-    images: ['assets/img/products/book-research.svg'],
+    images: ['assets/img/products/prd-015-1.jpg', 'assets/img/products/prd-015-2.jpg'],
     colors: ['#4E6E58'],
     sizes: [],
     featured: false,
@@ -380,7 +380,7 @@ export const dummyProducts = [
       activeItems: 6,
       avatar: 'DS'
     },
-    images: ['assets/img/products/polo-maroon.svg'],
+    images: ['assets/img/products/prd-016-1.jpg', 'assets/img/products/prd-016-2.jpg'],
     colors: ['#6B1724'],
     sizes: ['M', 'L'],
     featured: false,
@@ -404,7 +404,7 @@ export const dummyProducts = [
       activeItems: 3,
       avatar: 'MI'
     },
-    images: ['assets/img/products/totebag.svg'],
+    images: ['assets/img/products/prd-017-1.jpg', 'assets/img/products/prd-017-2.jpg'],
     colors: ['#2A2A2A', '#D9D9D6'],
     sizes: [],
     featured: false,
@@ -428,7 +428,7 @@ export const dummyProducts = [
       activeItems: 1,
       avatar: 'BL'
     },
-    images: ['assets/img/products/stethoscope.svg'],
+    images: ['assets/img/products/prd-018-1.jpg', 'assets/img/products/prd-018-2.jpg'],
     colors: ['#2A2A2A', '#A3A3A3'],
     sizes: [],
     featured: false,
@@ -452,7 +452,7 @@ export const dummyProducts = [
       activeItems: 2,
       avatar: 'RA'
     },
-    images: ['assets/img/products/jacket-denim.svg'],
+    images: ['assets/img/products/prd-019-1.jpg', 'assets/img/products/prd-019-2.jpg'],
     colors: ['#3A5375'],
     sizes: ['XL'],
     featured: false,
@@ -476,7 +476,7 @@ export const dummyProducts = [
       activeItems: 2,
       avatar: 'DL'
     },
-    images: ['assets/img/products/book-oxford.svg'],
+    images: ['assets/img/products/prd-020-1.jpg', 'assets/img/products/prd-020-2.jpg'],
     colors: ['#0B2B66'],
     sizes: [],
     featured: false,
@@ -500,7 +500,7 @@ export const dummyProducts = [
       activeItems: 3,
       avatar: 'BP'
     },
-    images: ['assets/img/products/pants-jogger.svg'],
+    images: ['assets/img/products/prd-021-1.jpg', 'assets/img/products/prd-021-2.jpg'],
     colors: ['#2A2A2A', '#3C4038'],
     sizes: ['L', 'XL'],
     featured: false,
@@ -524,7 +524,7 @@ export const dummyProducts = [
       activeItems: 1,
       avatar: 'BL'
     },
-    images: ['assets/img/products/book-anatomy.svg'],
+    images: ['assets/img/products/prd-022-1.jpg', 'assets/img/products/prd-022-2.jpg'],
     colors: ['#8B0000'],
     sizes: [],
     featured: false,
@@ -548,7 +548,7 @@ export const dummyProducts = [
       activeItems: 5,
       avatar: 'BS'
     },
-    images: ['assets/img/products/lamp-clip.svg'],
+    images: ['assets/img/products/prd-023-1.jpg', 'assets/img/products/prd-023-2.jpg'],
     colors: ['#FFFFFF'],
     sizes: [],
     featured: false,
@@ -572,7 +572,7 @@ export const dummyProducts = [
       activeItems: 3,
       avatar: 'RS'
     },
-    images: ['assets/img/products/tshirt-graphic.svg'],
+    images: ['assets/img/products/prd-024-1.jpg', 'assets/img/products/prd-024-2.jpg'],
     colors: ['#2A2A2A'],
     sizes: ['M', 'L'],
     featured: false,
