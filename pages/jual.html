@@ -394,8 +394,8 @@
           <!-- Penjual Info Box -->
           <div class="p-3 mb-4" style="background: var(--white); border-radius: var(--radius-sm); border: 2px solid var(--ink);">
             <div class="d-flex align-items-center gap-2">
-              <span class="badge-pill badge-verified">✓ Terverifikasi</span>
-              <span id="summary-seller-name" style="font-size: 0.85rem; font-weight: 700;">Iklan akan tayang atas nama Zahra Putri (Informatika 2024)</span>
+              <span class="badge-pill badge-pill-lilac" id="summary-seller-status">GUEST</span>
+              <span id="summary-seller-name" style="font-size: 0.85rem; font-weight: 700;">Iklan akan tersimpan sebagai GUEST di browser ini.</span>
             </div>
           </div>
 
@@ -450,8 +450,17 @@
       // Update Info Penjual di Ringkasan
       const user = getCurrentUser();
       const sellerInfoEl = document.getElementById('summary-seller-name');
-      if (sellerInfoEl && user) {
-        sellerInfoEl.textContent = `Iklan akan tayang atas nama ${user.name} (${user.faculty})`;
+      const sellerStatusEl = document.getElementById('summary-seller-status');
+      if (sellerInfoEl) {
+        sellerInfoEl.textContent = user.isLoggedIn
+          ? `Iklan akan tayang atas nama ${user.name} (${user.faculty})`
+          : 'Iklan demo akan tersimpan secara lokal sebagai GUEST.';
+      }
+      if (sellerStatusEl) {
+        sellerStatusEl.textContent = user.isLoggedIn && user.isVerified ? 'Terverifikasi' : 'GUEST';
+        sellerStatusEl.className = user.isLoggedIn && user.isVerified
+          ? 'badge-pill badge-verified'
+          : 'badge-pill badge-pill-lilac';
       }
 
       setupStepper();
@@ -781,12 +790,13 @@
           conditionBadge: document.getElementById('form-condition').value,
           description: document.getElementById('form-desc').value.trim(),
           seller: {
-            name: user.name,
-            faculty: user.faculty,
-            isVerified: true,
+            id: user.isLoggedIn ? user.id : 'guest',
+            name: user.isLoggedIn ? user.name : 'GUEST',
+            faculty: user.isLoggedIn ? user.faculty : '',
+            isVerified: Boolean(user.isLoggedIn && user.isVerified),
             activeItems: 1,
-            avatar: user.avatar || 'ZP',
-            phone: user.phone || '6281234567890'
+            avatar: user.isLoggedIn ? (user.avatar || 'M') : 'G',
+            phone: user.isLoggedIn ? (user.phone || '') : ''
           },
           codLocation: {
             campus: selectedCodLocation.campus,

@@ -16,70 +16,36 @@
   <!-- Top Header Mount -->
   <div id="header-mount"></div>
 
-  <main class="app-container" style="padding-top: 1.5rem; max-width: 680px;">
-    <!-- Kartu Profil Utama -->
-    <div class="card p-4 mb-4" style="border: var(--border-thick); border-radius: var(--radius-card); background: #fff; box-shadow: var(--shadow-flat);">
-      <div class="d-flex align-items-center gap-3 mb-3">
-        <div class="avatar-circle" style="width: 70px; height: 70px; font-size: 1.5rem; background: var(--lilac);">
-          ZP
-        </div>
+  <main class="app-container" style="padding-top: 1.5rem; padding-bottom: 6rem; max-width: 680px;">
+    <section class="card p-4 p-md-5 mb-4" aria-labelledby="user-display-name" style="border: var(--border-thick); border-radius: var(--radius-card); background: #fff; box-shadow: var(--shadow-flat);">
+      <div class="d-flex align-items-center gap-3">
+        <div class="avatar-circle" id="user-display-avatar" aria-hidden="true" style="width: 70px; height: 70px; font-size: 1.5rem; background: var(--lilac);">G</div>
         <div>
-          <h1 class="hero-title" style="font-size: 1.5rem; margin-bottom: 0.2rem;" id="user-display-name">
-            Zahra Putri
-          </h1>
-          <div class="d-flex align-items-center gap-2">
-            <span class="badge-pill badge-verified" id="badge-ktm-status">✓ KTM Terverifikasi</span>
-            <span style="font-size: 0.8rem; color: var(--ink-muted);" id="user-display-email">zahra@student.ac.id</span>
+          <p class="mb-1" style="font-size:0.72rem; font-weight:800; letter-spacing:0.1em; color:var(--ink-muted);">STATUS AKUN</p>
+          <h1 class="hero-title" id="user-display-name" style="font-size:1.5rem; margin-bottom:0.35rem;">GUEST</h1>
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="badge-pill badge-pill-lilac" id="badge-ktm-status">GUEST</span>
+            <span id="user-display-email" style="font-size:0.82rem; color:var(--ink-muted);">Email akun belum tersedia.</span>
           </div>
         </div>
       </div>
 
-      <div class="pt-3" style="border-top: 1.5px dashed rgba(42,42,42,0.15); font-size: 0.9rem;">
-        <div class="d-flex justify-content-between py-1">
-          <span class="text-muted">Fakultas / Prodi:</span>
-          <strong>Informatika (2024)</strong>
-        </div>
-        <div class="d-flex justify-content-between py-1">
-          <span class="text-muted">Nomor WhatsApp COD:</span>
-          <strong>+62 812-3456-7890</strong>
-        </div>
+      <div class="mt-4 p-3" role="status" style="background:var(--paper); border:1.5px solid rgba(42,42,42,0.12); border-radius:var(--radius-inner);">
+        <h2 style="font-family:var(--font-serif); font-size:1.15rem; margin-bottom:0.4rem;">Anda sedang menjelajah sebagai tamu</h2>
+        <p class="mb-0" style="font-size:0.88rem; color:var(--ink-muted);">Profil dan verifikasi KTM belum tersedia. Status tamu ini hanya untuk tampilan dan tidak memberikan proteksi akses.</p>
       </div>
-    </div>
 
-    <!-- Panel Verifikasi KTM Mahasiswa -->
-    <div class="card p-4 mb-4" style="border: var(--border-thick); border-radius: var(--radius-card); background: #fff; box-shadow: var(--shadow-flat);">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h2 style="font-family: var(--font-serif); font-size: 1.25rem; margin-bottom: 0;">Status Verifikasi Mahasiswa</h2>
-        <span class="badge-pill badge-pill-lime">Aktif</span>
-      </div>
-      <p style="font-size: 0.85rem; color: var(--ink-light); margin-bottom: 1rem;">
-        Hanya mahasiswa dengan email <code>.ac.id</code> atau foto KTM yang disetujui yang dapat memasang iklan dan melakukan penawaran harga.
-      </p>
-      
-      <div class="p-3 d-flex align-items-center justify-content-between" style="background: var(--paper); border-radius: var(--radius-inner); border: 1.5px solid rgba(42,42,42,0.1);">
-        <div class="d-flex align-items-center gap-2">
-          <span>🪪</span>
-          <span style="font-size: 0.85rem; font-weight: 700;">Kartu Tanda Mahasiswa (KTM)</span>
-        </div>
-        <span class="badge-pill badge-verified">Terverifikasi</span>
-      </div>
-    </div>
+      <a href="login.html" class="btn-pill btn-pill-lime w-100 mt-3" aria-label="Masuk atau daftar">Masuk / Daftar</a>
+    </section>
 
-    <!-- Menu Tautan Cepat -->
-    <div class="d-flex flex-column gap-2 mb-5">
-      <a href="tawaran.html" class="btn-pill btn-pill-outline justify-content-between">
-        <span>📦 Daftar Tawaran Saya</span>
-        <span>→</span>
-      </a>
-      <a href="favorit.html" class="btn-pill btn-pill-outline justify-content-between">
-        <span>❤️ Barang yang Disukai</span>
-        <span>→</span>
-      </a>
-      <a href="login.html" class="btn-pill btn-pill-outline justify-content-between" style="color: var(--heart-red); border-color: var(--heart-red);">
-        <span>Ganti Akun / Keluar</span>
-        <span>🚪</span>
-      </a>
-    </div>
+    <section class="card p-4 mb-5" aria-labelledby="profile-links-heading" style="border:var(--border-thick); border-radius:var(--radius-card); background:#fff; box-shadow:var(--shadow-flat);">
+      <h2 id="profile-links-heading" style="font-family:var(--font-serif); font-size:1.2rem;">Jelajahi PRELOVEDU</h2>
+      <div class="d-flex flex-column gap-2 mt-3">
+        <a href="tawaran.html" class="btn-pill btn-pill-outline justify-content-between"><span>Daftar Tawaran</span><span aria-hidden="true">→</span></a>
+        <a href="favorit.html" class="btn-pill btn-pill-outline justify-content-between"><span>Barang Favorit</span><span aria-hidden="true">→</span></a>
+        <a href="../index.html" class="btn-pill btn-pill-outline justify-content-between"><span>Kembali ke Beranda</span><span aria-hidden="true">→</span></a>
+      </div>
+    </section>
   </main>
 
   <!-- Bottom Nav Mount -->
@@ -103,8 +69,11 @@
       document.getElementById('bottom-nav-mount').innerHTML = renderBottomNav('profil', '../');
 
       const user = getCurrentUser();
-      document.getElementById('user-display-name').textContent = user.name;
-      document.getElementById('user-display-email').textContent = user.email;
+      const isGuest = !user.isLoggedIn;
+      document.getElementById('user-display-name').textContent = isGuest ? 'GUEST' : user.name;
+      document.getElementById('user-display-avatar').textContent = isGuest ? 'G' : (user.avatar || 'M');
+      document.getElementById('user-display-email').textContent = isGuest ? 'Email akun belum tersedia.' : user.email;
+      document.getElementById('badge-ktm-status').textContent = isGuest ? 'GUEST' : (user.isVerified ? 'KTM Terverifikasi' : 'Belum Terverifikasi');
     });
   </script>
 </body>

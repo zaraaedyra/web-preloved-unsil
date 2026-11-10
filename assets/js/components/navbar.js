@@ -14,6 +14,9 @@ import { getCurrentUser, getUnreadOffersCount } from '../services/storage.js';
 export function renderHeader(activePage = 'home', basePath = '') {
   const user = getCurrentUser();
   const unreadCount = getUnreadOffersCount();
+  const accountAction = user.isLoggedIn
+    ? `<a href="${basePath}pages/profil.html" class="avatar-circle" title="Profil ${user.name}" aria-label="Profil ${user.name}">${user.avatar || 'G'}</a>`
+    : `<a href="${basePath}pages/login.html" class="btn-pill btn-pill-outline" style="min-height:42px; padding:0.5rem 0.9rem; font-size:0.82rem; white-space:nowrap;" aria-label="Masuk atau daftar">Masuk / Daftar</a>`;
 
   return `
     <header class="top-nav-bar">
@@ -50,10 +53,7 @@ export function renderHeader(activePage = 'home', basePath = '') {
               ${unreadCount > 0 ? '<span class="badge-dot"></span>' : ''}
             </a>
 
-            <!-- Avatar Pengguna -->
-            <a href="${basePath}pages/profil.html" class="avatar-circle" title="Profil ${user.name}" aria-label="Profil ${user.name}">
-              ${user.avatar || 'M'}
-            </a>
+            ${accountAction}
           </div>
         </div>
       </div>

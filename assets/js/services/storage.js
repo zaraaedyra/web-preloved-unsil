@@ -3,23 +3,18 @@
 
 import { dummyProducts, normalizeFaculty } from '../data/dummy-products.js';
 import { campusSpots } from '../data/campus-spots.js';
+import {
+  getAuthUiState,
+  LEGACY_DEMO_USER_ID,
+  LEGACY_DEMO_USER_NAME,
+  USER_STORAGE_KEY
+} from './auth.js';
 
 export const STORAGE_KEYS = {
   PRODUCTS: 'prelovedu_products',
   FAVORITES: 'prelovedu_favorites',
   OFFERS: 'prelovedu_offers',
-  USER: 'prelovedu_user'
-};
-
-// Simulasi user mahasiswa yang aktif (Bisa diubah lewat halaman profil/login)
-export const DEFAULT_USER = {
-  id: 'usr-maba-01',
-  name: 'Zahra Putri',
-  faculty: 'Informatika 2024',
-  email: 'zahra@student.ac.id',
-  isVerified: true,
-  avatar: 'ZP',
-  phone: '6281234567890'
+  USER: USER_STORAGE_KEY
 };
 
 /**
@@ -45,16 +40,16 @@ export function initStorage() {
     // Tawaran contoh untuk simulasi alur Tawar lengkap (Terkirim & Masuk)
     const initialOffers = [
       {
-        id: 'prd-002_usr-maba-01',
+        id: 'prd-002_guest',
         productId: 'prd-002',
         productTitle: 'Jas Laboratorium Kimia FMIPA Bahan Katun Tebal Size L',
         productImage: 'assets/img/products/prd-002-1.jpg',
         sellerId: 'usr-anisa',
         sellerName: 'Anisa Rahmawati',
         sellerPhone: '628987654321',
-        buyerId: 'usr-maba-01',
-        buyerName: 'Zahra Putri',
-        buyerPhone: '6281234567890',
+        buyerId: 'guest',
+        buyerName: 'GUEST',
+        buyerPhone: '',
         hargaListing: 45000,
         hargaTawar: 40000,
         catatan: 'Bisa COD di depan gedung rektorat kak?',
@@ -63,16 +58,16 @@ export function initStorage() {
         expiresAt: new Date(Date.now() + 3600000 * 44).toISOString()
       },
       {
-        id: 'prd-003_usr-maba-01',
+        id: 'prd-003_guest',
         productId: 'prd-003',
         productTitle: 'Hoodie Kampus Vintage Boxy Cut Sage Green Unisex',
         productImage: 'assets/img/products/prd-003-1.jpg',
         sellerId: 'usr-dimas',
         sellerName: 'Dimas Setiawan',
         sellerPhone: '6281399887766',
-        buyerId: 'usr-maba-01',
-        buyerName: 'Zahra Putri',
-        buyerPhone: '6281234567890',
+        buyerId: 'guest',
+        buyerName: 'GUEST',
+        buyerPhone: '',
         hargaListing: 85000,
         hargaTawar: 70000,
         hargaBalik: 78000,
@@ -82,16 +77,16 @@ export function initStorage() {
         expiresAt: new Date(Date.now() + 3600000 * 40).toISOString()
       },
       {
-        id: 'prd-004_usr-maba-01',
+        id: 'prd-004_guest',
         productId: 'prd-004',
         productTitle: 'Kalkulator Saintifik Casio fx-991EX ClassWiz Original',
         productImage: 'assets/img/products/prd-004-1.jpg',
         sellerId: 'usr-fauzan',
         sellerName: 'Fauzan Hidayat',
         sellerPhone: '6281122334455',
-        buyerId: 'usr-maba-01',
-        buyerName: 'Zahra Putri',
-        buyerPhone: '6281234567890',
+        buyerId: 'guest',
+        buyerName: 'GUEST',
+        buyerPhone: '',
         hargaListing: 180000,
         hargaTawar: 160000,
         catatan: 'Bisa dicek solar cell-nya pas COD ya kak.',
@@ -104,15 +99,15 @@ export function initStorage() {
         productId: 'prd-001',
         productTitle: 'Kalkulus Purcell Edisi 9 Jilid 1',
         productImage: 'assets/img/products/prd-001-1.jpg',
-        sellerId: 'usr-maba-01',
-        sellerName: 'Zahra Putri',
-        sellerPhone: '6281234567890',
+        sellerId: 'guest',
+        sellerName: 'GUEST',
+        sellerPhone: '',
         buyerId: 'usr-budi',
         buyerName: 'Budi Santoso (Teknik Mesin 2024)',
         buyerPhone: '6287766554433',
         hargaListing: 65000,
         hargaTawar: 55000,
-        catatan: 'Halo kak Zahra, apakah boleh 55rb? COD perpustakaan pusat besok siang.',
+        catatan: 'Halo kak, apakah boleh 55rb? COD perpustakaan pusat besok siang.',
         status: 'menunggu',
         createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
         expiresAt: new Date(Date.now() + 3600000 * 45).toISOString()
@@ -121,9 +116,6 @@ export function initStorage() {
     localStorage.setItem(STORAGE_KEYS.OFFERS, JSON.stringify(initialOffers));
   }
 
-  if (!localStorage.getItem(STORAGE_KEYS.USER)) {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(DEFAULT_USER));
-  }
 }
 
 /**
@@ -266,30 +258,53 @@ export function toggleFavorite(productId) {
  */
 export function getCurrentUser() {
   initStorage();
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.USER)) || DEFAULT_USER;
-  } catch (e) {
-    return DEFAULT_USER;
-  }
-}
-
-/**
- * Update data profil pengguna
- */
-export function updateCurrentUser(patch) {
-  const user = { ...getCurrentUser(), ...patch };
-  localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-  window.dispatchEvent(new CustomEvent('userUpdated', { detail: user }));
-  return user;
+  return getAuthUiState().user;
 }
 
 /**
  * Mendapatkan semua tawaran
  */
+function normalizeLegacyGuestOffers(offers) {
+  let changed = false;
+  const normalizedOffers = offers.map((offer) => {
+    const normalizedOffer = { ...offer };
+    const hasLegacyBuyer = normalizedOffer.buyerId === LEGACY_DEMO_USER_ID || normalizedOffer.buyerName === LEGACY_DEMO_USER_NAME;
+    const hasLegacySeller = normalizedOffer.sellerId === LEGACY_DEMO_USER_ID || normalizedOffer.sellerName === LEGACY_DEMO_USER_NAME;
+
+    if (hasLegacyBuyer) {
+      normalizedOffer.buyerId = 'guest';
+      normalizedOffer.buyerName = 'GUEST';
+      normalizedOffer.buyerPhone = '';
+      changed = true;
+    }
+
+    if (hasLegacySeller) {
+      normalizedOffer.sellerId = 'guest';
+      normalizedOffer.sellerName = 'GUEST';
+      normalizedOffer.sellerPhone = '';
+      changed = true;
+    }
+
+    if (typeof normalizedOffer.id === 'string' && normalizedOffer.id.includes(LEGACY_DEMO_USER_ID)) {
+      normalizedOffer.id = normalizedOffer.id.replaceAll(LEGACY_DEMO_USER_ID, 'guest');
+      changed = true;
+    }
+
+    return normalizedOffer;
+  });
+
+  if (changed) {
+    localStorage.setItem(STORAGE_KEYS.OFFERS, JSON.stringify(normalizedOffers));
+  }
+
+  return normalizedOffers;
+}
+
 export function getOffers() {
   initStorage();
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.OFFERS)) || [];
+    const offers = JSON.parse(localStorage.getItem(STORAGE_KEYS.OFFERS)) || [];
+    return Array.isArray(offers) ? normalizeLegacyGuestOffers(offers) : [];
   } catch (e) {
     return [];
   }
@@ -323,7 +338,7 @@ export function updateProductStatus(productId, newStatus) {
  */
 export function addOffer(offerData) {
   const offers = getOffers();
-  const buyerId = offerData.buyerId || 'usr-maba-01';
+  const buyerId = offerData.buyerId || 'guest';
   const filtered = offers.filter(o => !(o.productId === offerData.productId && o.buyerId === buyerId));
   const newOffer = {
     id: offerData.id || `${offerData.productId}_${buyerId}`,
@@ -334,8 +349,8 @@ export function addOffer(offerData) {
     sellerName: offerData.sellerName || 'Penjual',
     sellerPhone: offerData.sellerPhone || '628123456789',
     buyerId: buyerId,
-    buyerName: offerData.buyerName || 'Zahra Putri',
-    buyerPhone: offerData.buyerPhone || '6281234567890',
+    buyerName: offerData.buyerName || 'GUEST',
+    buyerPhone: offerData.buyerPhone || '',
     hargaListing: offerData.hargaListing,
     hargaTawar: offerData.hargaTawar,
     catatan: offerData.catatan || '',
