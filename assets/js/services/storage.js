@@ -2,6 +2,7 @@
 // Lapisan data terpisah untuk memudahkan transisi dari LocalStorage ke Firebase Firestore (Fase 2)
 
 import { dummyProducts } from '../data/dummy-products.js';
+import { campusSpots } from '../data/campus-spots.js';
 
 export const STORAGE_KEYS = {
   PRODUCTS: 'prelovedu_products',
@@ -122,14 +123,45 @@ export function initStorage() {
 }
 
 /**
+ * Pastikan produk memiliki informasi titik COD valid
+ */
+export function ensureProductCodLocation(product) {
+  if (!product) return null;
+  if (product.codLocation && product.codLocation.lat && product.codLocation.lng) {
+    return product;
+  }
+
+  // Fallback preset berdasarkan fakultas / ID
+  const isKampus2 = product.faculty === 'Pertanian' || product.faculty === 'FISIP' || (product.id && product.id.endsWith('3'));
+  const campusId = isKampus2 ? 'kampus-2' : 'kampus-1';
+  const campus = campusSpots[campusId] || campusSpots['kampus-1'];
+  const spots = campus.spots;
+  const hash = (product.id || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const spot = spots[Math.abs(hash) % spots.length];
+
+  return {
+    ...product,
+    codLocation: {
+      campus: campusId,
+      campusName: campus.name,
+      spotId: spot.id,
+      lat: spot.lat,
+      lng: spot.lng,
+      spotName: spot.name
+    }
+  };
+}
+
+/**
  * Mendapatkan seluruh daftar produk
  */
 export function getProducts() {
   initStorage();
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || dummyProducts;
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || dummyProducts;
+    return raw.map(ensureProductCodLocation);
   } catch (e) {
-    return dummyProducts;
+    return dummyProducts.map(ensureProductCodLocation);
   }
 }
 
@@ -138,7 +170,37 @@ export function getProducts() {
  */
 export function getProductById(id) {
   const products = getProducts();
-  return products.find(p => p.id === id) || null;
+  const prod = products.find(p => p.id === id) || null;
+  return prod ? ensureProductCodLocation(prod) : null;
+}
+
+/**
+ * Menyimpan seluruh daftar produk ke LocalStorage
+ */
+export function saveProducts(products) {
+  localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+  window.dispatchEvent(new CustomEvent('productsUpdated', { detail: products }));
+}
+
+/**
+ * Menambahkan produk baru ke LocalStorage (digunakan oleh jual.html)
+ */
+export function addProduct(productData) {
+  const products = getProducts();
+  const id = productData.id || `prd-${Date.now()}`;
+  const now = new Date().toISOString();
+
+  const newProduct = {
+    ...productData,
+    id,
+    createdAt: productData.createdAt || now
+  };
+
+  const validatedProduct = ensureProductCodLocation(newProduct);
+  products.unshift(validatedProduct);
+  saveProducts(products);
+
+  return validatedProduct;
 }
 
 /**
