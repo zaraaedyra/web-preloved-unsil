@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>Masuk Mahasiswa — PRELOVEDU</title>
+  <title>Masuk / Daftar — PRELOVEDU</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/tokens.css" />
@@ -19,31 +19,16 @@
     <div class="text-center mb-4" id="login-logo-mount"></div>
 
     <h1 style="font-family: var(--font-serif); font-size: 1.6rem; text-align: center; margin-bottom: 0.5rem;">
-      Komunitas Preloved Mahasiswa
+      Masuk / Daftar
     </h1>
-    <p style="font-size: 0.88rem; color: var(--ink-muted); text-align: center; margin-bottom: 1.5rem;">
-      Masuk dengan email kampus (<code>.ac.id</code>) untuk mulai tawar-menawar barang kating.
+    <p style="font-size: 0.9rem; color: var(--ink-muted); text-align: center; margin-bottom: 1.25rem;">
+      Autentikasi belum tersedia. PRELOVEDU saat ini menampilkan antarmuka dalam mode GUEST.
     </p>
 
-    <form id="login-form">
-      <div class="mb-3">
-        <label for="login-email" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; display: block;">
-          Email Kampus (.ac.id)
-        </label>
-        <input type="email" id="login-email" class="input-pill" placeholder="nama@mahasiswa.ac.id" required />
-      </div>
-
-      <div class="mb-4">
-        <label for="login-password" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; display: block;">
-          Kata Sandi
-        </label>
-        <input type="password" id="login-password" class="input-pill" placeholder="••••••••" required />
-      </div>
-
-      <button type="submit" class="btn-pill btn-pill-lime w-100" style="font-size: 1rem;">
-        Masuk ke PRELOVEDU
-      </button>
-    </form>
+    <div class="alert alert-warning mb-0" role="status">
+      <strong>Mode GUEST</strong>
+      <p class="mb-0 mt-1" style="font-size:0.88rem;">Halaman ini belum membuat sesi masuk. Data LocalStorage tidak digunakan sebagai bukti autentikasi.</p>
+    </div>
 
     <div class="text-center mt-4">
       <a href="../index.html" class="section-link" style="font-size: 0.85rem;">
@@ -66,19 +51,6 @@
       // Logo Mount
       document.getElementById('login-logo-mount').innerHTML = getWordmarkLogo({ height: 32 });
 
-      // Form Submit Validation (.ac.id)
-      document.getElementById('login-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value.trim();
-
-        if (!email.endsWith('.ac.id')) {
-          alert('Mohon gunakan alamat email resmi kampus dengan domain .ac.id');
-          return;
-        }
-
-        alert('Login berhasil! Selamat datang di PRELOVEDU.');
-        window.location.href = '../index.html';
-      });
     });
   </script>
 </body>
