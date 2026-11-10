@@ -257,9 +257,14 @@
   box-shadow: 0 3px 0 var(--ink);
 }
 
-.category-item.active .category-circle,
+.category-item.active .category-circle {
+  background-color: var(--lilac);
+  transform: scale(1.05);
+  box-shadow: 0 4px 0 var(--ink);
+}
+
 .category-item:hover .category-circle {
-  background-color: var(--lime);
+  background-color: var(--lilac-hover);
   transform: scale(1.05);
 }
 
@@ -269,6 +274,18 @@
   color: var(--ink);
   text-align: center;
   white-space: nowrap;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.category-item.active .category-label {
+  background-color: var(--lilac);
+  border-color: var(--ink);
+  color: var(--ink);
+  font-weight: 800;
+  box-shadow: 0 2px 0 var(--ink);
 }
 
 /* Quick Filter Pills (Kondisi & Urutan) */

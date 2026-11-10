@@ -82,6 +82,20 @@ if (document.readyState === 'loading') {
 }
 
 /**
+ * Smooth scroll ke bagian katalog produk dengan menghormati prefers-reduced-motion
+ */
+function scrollToKatalog() {
+  const katalogSection = document.getElementById('katalog-section');
+  if (!katalogSection) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  katalogSection.scrollIntoView({
+    behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    block: 'start'
+  });
+}
+
+/**
  * Render Chip Kategori Bulat
  */
 function renderCategories() {
@@ -102,13 +116,14 @@ function renderCategories() {
     `;
   }).join('');
 
-  // Event click kategori
+  // Event click kategori: filter instan tanpa reload + smooth scroll ke katalog
   container.querySelectorAll('.category-item').forEach(btn => {
     btn.addEventListener('click', () => {
       container.querySelectorAll('.category-item').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.selectedCategory = btn.getAttribute('data-category-id');
       applyFiltersAndRender();
+      scrollToKatalog();
     });
   });
 }
@@ -195,10 +210,10 @@ function applyFiltersAndRender() {
           </div>
           <h4 style="font-family:var(--font-serif); font-size:1.35rem; margin-bottom:0.5rem;">Tidak Ada Barang Ditemukan</h4>
           <p style="color:var(--ink-muted); font-size:0.9rem; margin-bottom:1.25rem;">
-            Coba gunakan kata kunci lain atau reset filter kategori & fakultas.
+            Belum ada barang di kategori ini. Coba lihat kategori lain atau tampilkan semua barang.
           </p>
           <button type="button" id="btn-reset-filter" class="btn-pill btn-pill-lime">
-            Reset Semua Filter
+            Lihat Semua
           </button>
         </div>
       </div>
@@ -218,6 +233,7 @@ function applyFiltersAndRender() {
       });
       renderCategories();
       applyFiltersAndRender();
+      scrollToKatalog();
     });
     return;
   }
@@ -287,14 +303,18 @@ function setupEventListeners() {
     });
   }
 
-  // Link "Lihat semua" di kategori
-  document.querySelectorAll('.section-link[href="#katalog-section"]').forEach(link => {
-    link.addEventListener('click', () => {
-      state.selectedCategory = 'all';
-      document.querySelectorAll('.category-item').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-category-id') === 'all');
-      });
-      applyFiltersAndRender();
+  // Link "Lihat semua" di kategori & anchor ke katalog
+  document.querySelectorAll('a[href="#katalog-section"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (link.classList.contains('section-link')) {
+        state.selectedCategory = 'all';
+        document.querySelectorAll('.category-item').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-category-id') === 'all');
+        });
+        applyFiltersAndRender();
+      }
+      scrollToKatalog();
     });
   });
 }

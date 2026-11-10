@@ -29,8 +29,8 @@ export const dummyProducts = [
   {
     id: 'prd-002',
     title: 'Jas Laboratorium Kimia FMIPA Bahan Katun Tebal Size L',
-    category: 'praktikum',
-    categoryLabel: 'Peralatan Praktikum',
+    category: 'pakaian',
+    categoryLabel: 'Pakaian Praktikum',
     faculty: 'MIPA',
     price: 45000,
     originalPrice: 95000,
@@ -53,7 +53,7 @@ export const dummyProducts = [
   {
     id: 'prd-003',
     title: 'Hoodie Kampus Vintage Boxy Cut Sage Green Unisex',
-    category: 'hoodie',
+    category: 'pakaian',
     categoryLabel: 'Hoodie',
     faculty: 'Ekonomi',
     price: 85000,
@@ -77,8 +77,8 @@ export const dummyProducts = [
   {
     id: 'prd-004',
     title: 'Kalkulator Saintifik Casio fx-991EX ClassWiz Original',
-    category: 'praktikum',
-    categoryLabel: 'Peralatan Praktikum',
+    category: 'elektronik',
+    categoryLabel: 'Perangkat Elektronik',
     faculty: 'Teknik',
     price: 180000,
     originalPrice: 340000,
@@ -101,7 +101,7 @@ export const dummyProducts = [
   {
     id: 'prd-005',
     title: 'Jaket Parka Outdoor Canvas Khaki Tebal Cocok Naik Motor',
-    category: 'jaket',
+    category: 'pakaian',
     categoryLabel: 'Jaket/Outerwear',
     faculty: 'Pertanian',
     price: 110000,
@@ -149,7 +149,7 @@ export const dummyProducts = [
   {
     id: 'prd-007',
     title: 'Celana Chino Slim Fit Hitam Bahan Stretch Nyaman Kuliah',
-    category: 'celana',
+    category: 'pakaian',
     categoryLabel: 'Celana',
     faculty: 'Hukum',
     price: 60000,
@@ -173,7 +173,7 @@ export const dummyProducts = [
   {
     id: 'prd-008',
     title: 'Kaos Oversized Heavyweight Cotton 24s Warna Off-White',
-    category: 'kaos',
+    category: 'pakaian',
     categoryLabel: 'Kaos',
     faculty: 'Fasilkom',
     price: 45000,
@@ -197,8 +197,8 @@ export const dummyProducts = [
   {
     id: 'prd-009',
     title: 'T-Square / Penggaris Segitiga Arsitektur & Tabung Gambar Drafting',
-    category: 'praktikum',
-    categoryLabel: 'Peralatan Praktikum',
+    category: 'perabot',
+    categoryLabel: 'Perabot Kost',
     faculty: 'Teknik',
     price: 55000,
     originalPrice: 130000,
@@ -245,7 +245,7 @@ export const dummyProducts = [
   {
     id: 'prd-011',
     title: 'Varsity Jacket Fleece Wool Dark Navy x White Leather Sleeve',
-    category: 'jaket',
+    category: 'pakaian',
     categoryLabel: 'Jaket/Outerwear',
     faculty: 'FISIP',
     price: 135000,
@@ -269,8 +269,8 @@ export const dummyProducts = [
   {
     id: 'prd-012',
     title: 'Keyboard Mekanikal Wireless 68-Key Red Switch (Enak Buat Skripsian)',
-    category: 'lainnya',
-    categoryLabel: 'Lainnya',
+    category: 'elektronik',
+    categoryLabel: 'Perangkat Elektronik',
     faculty: 'Fasilkom',
     price: 195000,
     originalPrice: 380000,
@@ -293,7 +293,7 @@ export const dummyProducts = [
   {
     id: 'prd-013',
     title: 'Celana Kulot Linen Highwaist Warna Oat Milk (Casual Kampus)',
-    category: 'celana',
+    category: 'pakaian',
     categoryLabel: 'Celana',
     faculty: 'Psikologi',
     price: 50000,
@@ -317,7 +317,7 @@ export const dummyProducts = [
   {
     id: 'prd-014',
     title: 'Hoodie Himpunan Mahasiswa Polos Hitam Pekat Tebal 330 Gsm',
-    category: 'hoodie',
+    category: 'pakaian',
     categoryLabel: 'Hoodie',
     faculty: 'Teknik',
     price: 75000,
@@ -365,7 +365,7 @@ export const dummyProducts = [
   {
     id: 'prd-016',
     title: 'Kaos Polo Shirt Formal Kampus Katun Pique Warna Maroon',
-    category: 'kaos',
+    category: 'pakaian',
     categoryLabel: 'Kaos',
     faculty: 'Ekonomi',
     price: 40000,
@@ -389,8 +389,8 @@ export const dummyProducts = [
   {
     id: 'prd-017',
     title: 'Totebag Kanvas Waterproof Muat Laptop 15.6 Inch + Resleting',
-    category: 'lainnya',
-    categoryLabel: 'Lainnya',
+    category: 'perabot',
+    categoryLabel: 'Perabot Kost',
     faculty: 'FSRD',
     price: 35000,
     originalPrice: 89000,
@@ -413,8 +413,8 @@ export const dummyProducts = [
   {
     id: 'prd-018',
     title: 'Stetoskop Medis Stainless Steel Dual Head (Praktikum Medis/Keperawatan)',
-    category: 'praktikum',
-    categoryLabel: 'Peralatan Praktikum',
+    category: 'elektronik',
+    categoryLabel: 'Perangkat Elektronik',
     faculty: 'Kedokteran',
     price: 120000,
     originalPrice: 280000,
@@ -437,7 +437,7 @@ export const dummyProducts = [
   {
     id: 'prd-019',
     title: 'Jaket Denim Vintage Washed Oversized Unisex Warna Blue Indigo',
-    category: 'jaket',
+    category: 'pakaian',
     categoryLabel: 'Jaket/Outerwear',
     faculty: 'Ilmu Budaya',
     price: 95000,
@@ -485,7 +485,7 @@ export const dummyProducts = [
   {
     id: 'prd-021',
     title: 'Celana Training Cargo Jogger Parasut Anti Air Kantong Samping',
-    category: 'celana',
+    category: 'pakaian',
     categoryLabel: 'Celana',
     faculty: 'FIK',
     price: 55000,
@@ -533,8 +533,8 @@ export const dummyProducts = [
   {
     id: 'prd-023',
     title: 'Lampu Meja Belajar LED Klip Fleksibel Rechargeable 3 Tingkat Cahaya',
-    category: 'lainnya',
-    categoryLabel: 'Lainnya',
+    category: 'perabot',
+    categoryLabel: 'Perabot Kost',
     faculty: 'Teknik',
     price: 35000,
     originalPrice: 75000,
@@ -557,7 +557,7 @@ export const dummyProducts = [
   {
     id: 'prd-024',
     title: 'Kaos Graphic Tees Event Kampus Festival Musik Indie Siluet Hitam',
-    category: 'kaos',
+    category: 'pakaian',
     categoryLabel: 'Kaos',
     faculty: 'FISIP',
     price: 35000,
@@ -583,13 +583,10 @@ export const dummyProducts = [
 // Kategori Terstruktur dengan Ikon
 export const categoriesList = [
   { id: 'all', label: 'Semua', icon: 'tag' },
-  { id: 'buku', label: 'Buku Bekas', icon: 'book' },
-  { id: 'jaket', label: 'Jaket/Outer', icon: 'shirt' },
-  { id: 'kaos', label: 'Kaos', icon: 'shirt' },
-  { id: 'hoodie', label: 'Hoodie', icon: 'shirt' },
-  { id: 'celana', label: 'Celana', icon: 'tag' },
-  { id: 'praktikum', label: 'Praktikum', icon: 'flask' },
-  { id: 'lainnya', label: 'Lainnya', icon: 'cpu' }
+  { id: 'buku', label: 'Buku', icon: 'book' },
+  { id: 'perabot', label: 'Perabot Kost', icon: 'home' },
+  { id: 'pakaian', label: 'Pakaian', icon: 'shirt' },
+  { id: 'elektronik', label: 'Perangkat Elektronik', icon: 'cpu' }
 ];
 
 // Daftar Fakultas untuk Dropdown Filter
