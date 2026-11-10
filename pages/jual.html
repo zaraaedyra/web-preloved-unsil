@@ -262,26 +262,14 @@
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-bold" style="font-size: 0.88rem;">Pilihan Foto Barang</label>
-            <div class="d-flex gap-2 align-items-center flex-wrap" id="photo-choice-container">
-              <label class="d-flex align-items-center gap-2 p-2 border rounded" style="cursor: pointer; background: var(--paper);">
-                <input type="radio" name="photo_preset" value="assets/img/products/prd-001-1.jpg" checked />
-                <span style="font-size: 0.82rem; font-weight: 600;">Buku / Catatan</span>
-              </label>
-              <label class="d-flex align-items-center gap-2 p-2 border rounded" style="cursor: pointer; background: var(--paper);">
-                <input type="radio" name="photo_preset" value="assets/img/products/prd-002-1.jpg" />
-                <span style="font-size: 0.82rem; font-weight: 600;">Jas Lab / Pakaian</span>
-              </label>
-              <label class="d-flex align-items-center gap-2 p-2 border rounded" style="cursor: pointer; background: var(--paper);">
-                <input type="radio" name="photo_preset" value="assets/img/products/prd-004-1.jpg" />
-                <span style="font-size: 0.82rem; font-weight: 600;">Kalkulator / Elektronik</span>
-              </label>
-              <label class="d-flex align-items-center gap-2 p-2 border rounded" style="cursor: pointer; background: var(--paper);">
-                <input type="radio" name="photo_preset" value="assets/img/products/prd-003-1.jpg" />
-                <span style="font-size: 0.82rem; font-weight: 600;">Hoodie / Jaket</span>
-              </label>
-            </div>
+          <div class="mb-3" id="photo-choice-container">
+            <label for="foto-barang" class="form-label fw-bold" style="font-size: 0.88rem;">Foto Asli Barang *</label>
+            <input type="file" id="foto-barang" class="input-pill" accept="image/*" aria-describedby="foto-barang-help foto-barang-status" />
+            <p id="foto-barang-help" class="mt-2 mb-2" style="font-size: 0.78rem; color: var(--ink-muted);">
+              Unggah foto JPG, PNG, atau WebP. Maksimal 1 MB agar dapat disimpan di browser.
+            </p>
+            <img id="photo-preview" alt="Pratinjau foto asli barang" hidden style="width: 100%; max-width: 220px; aspect-ratio: 1; object-fit: cover; border: 2px solid var(--ink); border-radius: var(--radius-sm);" />
+            <p id="foto-barang-status" role="status" aria-live="polite" class="mt-2 mb-0" style="font-size: 0.8rem;"></p>
           </div>
 
           <div class="d-flex gap-2 mt-4">
@@ -432,6 +420,10 @@
     import { campusSpots, getCampus } from '../assets/js/data/campus-spots.js';
     import { initCodPickerMap } from '../assets/js/components/map.js';
 
+    const MAX_PHOTO_UPLOAD_BYTES = 1024 * 1024;
+    let selectedPhotoDataUrl = '';
+    let photoSelectionId = 0;
+    let activePhotoReader = null;
     let pickerMapInstance = null;
     let selectedCodLocation = {
       campus: 'kampus-1',
@@ -464,6 +456,7 @@
 
       setupStepper();
       setupCampusTabsAndPresets();
+      setupPhotoUpload();
     });
 
     /**
@@ -574,6 +567,65 @@
       });
     }
 
+    function setupPhotoUpload() {
+      const input = document.getElementById('foto-barang');
+      const preview = document.getElementById('photo-preview');
+      const status = document.getElementById('foto-barang-status');
+
+      input.addEventListener('change', () => {
+        const selectionId = ++photoSelectionId;
+        if (activePhotoReader?.readyState === FileReader.LOADING) {
+          activePhotoReader.abort();
+        }
+
+        selectedPhotoDataUrl = '';
+        preview.hidden = true;
+        status.textContent = '';
+        input.removeAttribute('aria-invalid');
+
+        const file = input.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+          input.value = '';
+          input.setAttribute('aria-invalid', 'true');
+          status.textContent = 'Pilih foto raster JPG, PNG, atau WebP.';
+          return;
+        }
+
+        if (file.size > MAX_PHOTO_UPLOAD_BYTES) {
+          input.value = '';
+          input.setAttribute('aria-invalid', 'true');
+          status.textContent = 'Ukuran foto maksimal 1 MB. Pilih foto yang lebih kecil.';
+          return;
+        }
+
+        const reader = new FileReader();
+        activePhotoReader = reader;
+        reader.addEventListener('load', () => {
+          if (selectionId !== photoSelectionId) return;
+          if (typeof reader.result !== 'string' || !reader.result.startsWith('data:image/')) {
+            input.value = '';
+            input.setAttribute('aria-invalid', 'true');
+            status.textContent = 'Foto tidak dapat dibaca. Coba pilih file lain.';
+            return;
+          }
+
+          selectedPhotoDataUrl = reader.result;
+          preview.src = selectedPhotoDataUrl;
+          preview.hidden = false;
+          status.textContent = `${file.name} siap digunakan.`;
+        }, { once: true });
+        reader.addEventListener('error', () => {
+          if (selectionId !== photoSelectionId) return;
+          input.value = '';
+          input.setAttribute('aria-invalid', 'true');
+          status.textContent = 'Foto gagal dibaca. Coba pilih file lain.';
+        }, { once: true });
+        reader.readAsDataURL(file);
+      });
+    }
+
     /**
      * Navigasi Stepper 4 Tahap
      */
@@ -648,6 +700,15 @@
 
       // Step 2 -> 3
       document.getElementById('btn-next-2').addEventListener('click', () => {
+        if (!selectedPhotoDataUrl) {
+          const photoInput = document.getElementById('foto-barang');
+          const photoStatus = document.getElementById('foto-barang-status');
+          photoInput.setAttribute('aria-invalid', 'true');
+          photoStatus.textContent = 'Unggah foto asli barang sebelum melanjutkan.';
+          photoInput.focus();
+          return;
+        }
+
         const price = Number(document.getElementById('form-price').value);
         if (!price || price <= 0) {
           alert('Silakan masukkan harga jual yang valid (minimal Rp 1.000).');
@@ -680,10 +741,9 @@
         const cond = document.getElementById('form-condition').value;
         const faculty = document.getElementById('form-faculty').value;
         const desc = document.getElementById('form-desc').value.trim();
-        const photoRadio = document.querySelector('input[name="photo_preset"]:checked');
-        const photoSrc = photoRadio ? photoRadio.value : 'assets/img/products/prd-001-1.jpg';
+        const photoSrc = selectedPhotoDataUrl;
 
-        document.getElementById('summary-img').src = `../${photoSrc}`;
+        document.getElementById('summary-img').src = photoSrc;
         document.getElementById('summary-title').textContent = title;
         document.getElementById('summary-condition').textContent = cond;
         document.getElementById('summary-faculty').textContent = faculty;
@@ -701,8 +761,10 @@
         const user = getCurrentUser();
         const price = Number(document.getElementById('form-price').value);
         const origPrice = Number(document.getElementById('form-original-price').value) || Math.round(price * 1.4);
-        const photoRadio = document.querySelector('input[name="photo_preset"]:checked');
-        const photoSrc = photoRadio ? photoRadio.value : 'assets/img/products/prd-001-1.jpg';
+        if (!selectedPhotoDataUrl) {
+          showToast('Unggah foto asli barang sebelum menerbitkan iklan.');
+          return;
+        }
 
         const categorySelect = document.getElementById('form-category');
         const categoryVal = categorySelect.value;
@@ -734,14 +796,23 @@
             lng: selectedCodLocation.lng,
             spotName: selectedCodLocation.spotName
           },
-          images: [photoSrc],
+          images: [selectedPhotoDataUrl],
           colors: ['#2A2A2A'],
           sizes: [],
           featured: false
         };
 
-        const saved = addProduct(newProduct);
-        showToast('🎉 Iklan berhasil diterbitkan!');
+        let saved;
+        try {
+          saved = addProduct(newProduct);
+        } catch (error) {
+          const storageFull = error?.name === 'QuotaExceededError' || error?.name === 'NS_ERROR_DOM_QUOTA_REACHED';
+          showToast(storageFull
+            ? 'Penyimpanan browser penuh. Hapus iklan lama atau unggah foto yang lebih kecil.'
+            : 'Iklan gagal disimpan. Coba unggah foto lain.');
+          return;
+        }
+        showToast('Iklan berhasil diterbitkan.');
         setTimeout(() => {
           window.location.href = `detail.html?id=${saved.id}`;
         }, 900);

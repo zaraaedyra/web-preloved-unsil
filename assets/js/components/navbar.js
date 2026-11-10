@@ -40,6 +40,10 @@ export function renderHeader(activePage = 'home', basePath = '') {
               <span>Pasang Iklan</span>
             </a>
 
+            <a href="${basePath}pages/admin.html" class="nav-link-desktop d-none d-md-inline-flex ${activePage === 'admin' ? 'fw-bold' : ''}" style="font-size:0.9rem; font-weight:700; white-space:nowrap;">
+              Admin Portal
+            </a>
+
             <!-- Tombol Notifikasi Tawaran (Lonceng) -->
             <a href="${basePath}pages/tawaran.html" class="btn-circle btn-circle-white" aria-label="Notifikasi Tawaran" title="Daftar Tawaran">
               ${icons.bell(20, 2.5)}
