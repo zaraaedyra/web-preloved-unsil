@@ -240,8 +240,25 @@ function applyFiltersAndRender() {
 
   grid.innerHTML = filtered.map(item => renderProductCard(item, { basePath: '' })).join('');
 
-  // Pasang Listener Favorit di tiap kartu
+  // Pasang Listener Klik & Favorit di tiap kartu
   attachFavoriteListeners(grid);
+  attachCardClickListeners(grid);
+}
+
+/**
+ * Listener Navigasi Seluruh Area Kartu Produk
+ */
+function attachCardClickListeners(container) {
+  container.querySelectorAll('.product-card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-favorite') || e.target.closest('a')) return;
+      const productId = card.getAttribute('data-product-id');
+      if (productId) {
+        window.location.href = `pages/detail.html?id=${productId}`;
+      }
+    });
+  });
 }
 
 /**

@@ -390,6 +390,7 @@
   flex-direction: column;
   transition: all var(--transition-fast);
   position: relative;
+  cursor: pointer;
 }
 
 .product-card:hover {
