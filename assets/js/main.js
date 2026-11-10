@@ -243,6 +243,23 @@ function applyFiltersAndRender() {
   // Pasang Listener Klik & Favorit di tiap kartu
   attachFavoriteListeners(grid);
   attachCardClickListeners(grid);
+
+  // Pasang Listener Favorit di seluruh halaman (termasuk featured card)
+  attachFavoriteListeners(document.body);
+  syncFavoriteButtons();
+}
+
+/**
+ * Sinkronisasi visual semua tombol hati favorit di halaman
+ */
+function syncFavoriteButtons() {
+  document.querySelectorAll('.btn-favorite').forEach(btn => {
+    const id = btn.getAttribute('data-fav-id');
+    if (!id) return;
+    const fav = isFavorited(id);
+    btn.classList.toggle('favorited', fav);
+    btn.innerHTML = icons.heart(19, 2.5, fav);
+  });
 }
 
 /**
@@ -266,19 +283,19 @@ function attachCardClickListeners(container) {
  */
 function attachFavoriteListeners(container) {
   container.querySelectorAll('.btn-favorite').forEach(btn => {
+    if (btn.hasAttribute('data-fav-bound')) return;
+    btn.setAttribute('data-fav-bound', 'true');
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       const productId = btn.getAttribute('data-fav-id');
       const nowFavorited = toggleFavorite(productId);
 
+      syncFavoriteButtons();
+
       if (nowFavorited) {
-        btn.classList.add('favorited');
-        btn.innerHTML = icons.heart(19, 2.5, true);
         showToast('❤️ Disimpan ke Favorit Anda');
       } else {
-        btn.classList.remove('favorited');
-        btn.innerHTML = icons.heart(19, 2.5, false);
         showToast('Barang dihapus dari Favorit');
       }
     });
@@ -289,6 +306,20 @@ function attachFavoriteListeners(container) {
  * Event Listeners Input Pencarian & Filter
  */
 function setupEventListeners() {
+  // Listener sinkronisasi antar-tab & event lokal
+  window.addEventListener('favoritesUpdated', () => {
+    syncFavoriteButtons();
+  });
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'prelovedu_favorites') {
+      syncFavoriteButtons();
+    } else if (e.key === 'prelovedu_products') {
+      applyFiltersAndRender();
+    }
+  });
+  window.addEventListener('productsUpdated', () => {
+    applyFiltersAndRender();
+  });
   const searchInput = document.getElementById('search-input');
   if (searchInput) {
     let debounceTimer;

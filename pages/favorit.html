@@ -73,6 +73,15 @@
       document.getElementById('bottom-nav-mount').innerHTML = renderBottomNav('favorit', '../');
 
       renderFavoriteItems();
+
+      // Sinkronisasi antar-tab dan event lokal
+      window.addEventListener('favoritesUpdated', renderFavoriteItems);
+      window.addEventListener('productsUpdated', renderFavoriteItems);
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'prelovedu_favorites' || e.key === 'prelovedu_products') {
+          renderFavoriteItems();
+        }
+      });
     }
 
     if (document.readyState === 'loading') {
@@ -110,17 +119,40 @@
         return;
       }
 
-      container.innerHTML = favProducts.map(item => `
-        <article class="featured-card" style="margin-bottom:0;" data-id="${item.id}">
+      container.innerHTML = favProducts.map(item => {
+        const status = item.status || 'tersedia';
+        let statusBadge = '<span class="badge-pill badge-pill-lime" style="font-size:0.72rem; padding:0.2rem 0.6rem; margin-bottom:0.35rem;">Tersedia</span>';
+        let actionBtn = `
+          <a href="detail.html?id=${item.id}" class="btn-pill btn-pill-lime" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">
+            Tawar Sekarang
+          </a>
+        `;
+
+        if (status === 'dalam_proses_cod') {
+          statusBadge = '<span class="badge-pill badge-pill-lilac" style="font-size:0.72rem; padding:0.2rem 0.6rem; margin-bottom:0.35rem;">🤝 Dalam Proses COD</span>';
+        } else if (status === 'terjual') {
+          statusBadge = '<span class="badge-pill" style="background:#374151; color:#fff; font-size:0.72rem; padding:0.2rem 0.6rem; margin-bottom:0.35rem;">✓ Terjual</span>';
+          actionBtn = `
+            <button type="button" class="btn-pill btn-pill-outline" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem; opacity:0.6; cursor:not-allowed;" disabled>
+              Barang Terjual
+            </button>
+          `;
+        }
+
+        return `
+        <article class="featured-card ${status === 'terjual' ? 'is-sold' : ''}" style="margin-bottom:0;" data-id="${item.id}">
           <div class="featured-card-media" style="width:130px; min-height:120px; padding:0.75rem;">
             <img src="../${item.images[0]}" alt="${item.title}" style="max-height:85px;" />
           </div>
           <div class="featured-card-content" style="padding:1rem 1.25rem;">
             <div class="d-flex justify-content-between align-items-start gap-2">
               <div>
-                <span class="badge-pill badge-pill-lime" style="font-size:0.72rem; padding:0.2rem 0.6rem; margin-bottom:0.35rem;">
-                  ${item.conditionBadge || item.condition}
-                </span>
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                  ${statusBadge}
+                  <span class="badge-pill badge-pill-lime" style="font-size:0.72rem; padding:0.2rem 0.6rem; margin-bottom:0.35rem;">
+                    ${item.conditionBadge || item.condition}
+                  </span>
+                </div>
                 <h3 class="product-title" style="font-size:1.15rem; min-height:auto; margin-bottom:0.35rem;">
                   <a href="detail.html?id=${item.id}">${item.title}</a>
                 </h3>
@@ -135,13 +167,12 @@
 
             <div class="d-flex align-items-center justify-content-between mt-3 pt-2" style="border-top:1.5px dashed rgba(42,42,42,0.15);">
               <div class="product-price-val" style="font-size:1.35rem;">${formatRupiah(item.price)}</div>
-              <a href="detail.html?id=${item.id}" class="btn-pill btn-pill-lime" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">
-                Tawar Sekarang
-              </a>
+              ${actionBtn}
             </div>
           </div>
         </article>
-      `).join('');
+      `;
+      }).join('');
 
       // Listener tombol hapus
       container.querySelectorAll('.btn-remove-fav').forEach(btn => {

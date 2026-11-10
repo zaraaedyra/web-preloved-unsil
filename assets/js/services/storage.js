@@ -28,7 +28,11 @@ export const DEFAULT_USER = {
 export function initStorage() {
   const currentProds = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
   if (!currentProds || currentProds.includes('.svg')) {
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(dummyProducts));
+    const initialProducts = dummyProducts.map(p => ({
+      ...p,
+      status: p.id === 'prd-002' ? 'dalam_proses_cod' : (p.status || 'tersedia')
+    }));
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(initialProducts));
   }
 
   if (!localStorage.getItem(STORAGE_KEYS.FAVORITES)) {
@@ -141,6 +145,7 @@ export function ensureProductCodLocation(product) {
 
   return {
     ...product,
+    status: product.status || 'tersedia',
     codLocation: {
       campus: campusId,
       campusName: campus.name,
@@ -287,6 +292,52 @@ export function saveOffers(offers) {
 }
 
 /**
+ * Memperbarui status barang (tersedia | dalam_proses_cod | terjual)
+ */
+export function updateProductStatus(productId, newStatus) {
+  const products = getProducts();
+  const idx = products.findIndex(p => p.id === productId);
+  if (idx !== -1) {
+    products[idx].status = newStatus;
+    products[idx].updatedAt = new Date().toISOString();
+    saveProducts(products);
+    return products[idx];
+  }
+  return null;
+}
+
+/**
+ * Menambahkan tawaran baru berstatus "menunggu"
+ */
+export function addOffer(offerData) {
+  const offers = getOffers();
+  const buyerId = offerData.buyerId || 'usr-maba-01';
+  const filtered = offers.filter(o => !(o.productId === offerData.productId && o.buyerId === buyerId));
+  const newOffer = {
+    id: offerData.id || `${offerData.productId}_${buyerId}`,
+    productId: offerData.productId,
+    productTitle: offerData.productTitle,
+    productImage: offerData.productImage || 'assets/img/products/prd-001-1.jpg',
+    sellerId: offerData.sellerId || 'usr-seller',
+    sellerName: offerData.sellerName || 'Penjual',
+    sellerPhone: offerData.sellerPhone || '628123456789',
+    buyerId: buyerId,
+    buyerName: offerData.buyerName || 'Zahra Putri',
+    buyerPhone: offerData.buyerPhone || '6281234567890',
+    hargaListing: offerData.hargaListing,
+    hargaTawar: offerData.hargaTawar,
+    catatan: offerData.catatan || '',
+    status: 'menunggu',
+    createdAt: offerData.createdAt || new Date().toISOString(),
+    expiresAt: offerData.expiresAt || new Date(Date.now() + 3600000 * 48).toISOString()
+  };
+
+  filtered.unshift(newOffer);
+  saveOffers(filtered);
+  return newOffer;
+}
+
+/**
  * Update satu tawaran berdasarkan ID
  */
 export function updateOffer(offerId, patch) {
@@ -295,6 +346,11 @@ export function updateOffer(offerId, patch) {
   if (idx !== -1) {
     offers[idx] = { ...offers[idx], ...patch, updatedAt: new Date().toISOString() };
     saveOffers(offers);
+
+    if (patch.status === 'diterima') {
+      updateProductStatus(offers[idx].productId, 'dalam_proses_cod');
+    }
+
     return offers[idx];
   }
   return null;

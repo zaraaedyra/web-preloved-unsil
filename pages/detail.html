@@ -228,6 +228,7 @@
 
     <!-- 2. Badges & Judul Produk -->
     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+      <span id="detail-badge-status" class="badge-pill badge-pill-lime">Tersedia</span>
       <span id="detail-badge-condition" class="badge-pill badge-pill-lime">Seperti baru</span>
       <span id="detail-badge-faculty" class="badge-pill badge-pill-lilac">Teknik</span>
       <span id="detail-badge-category" class="badge-pill badge-pill-ink">Buku Bekas</span>
@@ -426,7 +427,7 @@
   <script type="module">
     import { renderHeader, showToast } from '../assets/js/components/navbar.js';
     import { renderFavicon } from '../assets/js/components/logo.js';
-    import { getProductById, getProducts, isFavorited, toggleFavorite, getOffers, saveOffers } from '../assets/js/services/storage.js';
+    import { getProductById, getProducts, isFavorited, toggleFavorite, getOffers, saveOffers, addOffer, updateProductStatus, getCurrentUser } from '../assets/js/services/storage.js';
     import { formatRupiah } from '../assets/js/components/product-card.js';
     import { icons } from '../assets/js/components/icons.js';
     import { initCodDisplayMap } from '../assets/js/components/map.js';
@@ -465,12 +466,46 @@
       loadProductDetails(currentProduct);
       checkExistingOffer(currentProduct);
       setupOfferModal();
+      setupDetailSync();
     }
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
     } else {
       init();
+    }
+
+    function setupDetailSync() {
+      const favBtn = document.getElementById('btn-fav-detail');
+      function syncFav() {
+        if (!currentProduct) return;
+        const fav = isFavorited(currentProduct.id);
+        favBtn.classList.toggle('favorited', fav);
+        favBtn.innerHTML = icons.heart(20, 2.5, fav);
+      }
+
+      window.addEventListener('favoritesUpdated', syncFav);
+      window.addEventListener('productsUpdated', () => {
+        if (!currentProduct) return;
+        currentProduct = getProductById(currentProduct.id) || currentProduct;
+        loadProductDetails(currentProduct);
+        checkExistingOffer(currentProduct);
+      });
+      window.addEventListener('offersUpdated', () => {
+        if (!currentProduct) return;
+        currentProduct = getProductById(currentProduct.id) || currentProduct;
+        loadProductDetails(currentProduct);
+        checkExistingOffer(currentProduct);
+      });
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'prelovedu_favorites') syncFav();
+        if (e.key === 'prelovedu_products' || e.key === 'prelovedu_offers') {
+          if (!currentProduct) return;
+          currentProduct = getProductById(currentProduct.id) || currentProduct;
+          loadProductDetails(currentProduct);
+          checkExistingOffer(currentProduct);
+        }
+      });
     }
 
     function loadProductDetails(prod) {
@@ -482,6 +517,28 @@
       document.getElementById('detail-original-price').textContent = formatRupiah(origPrice);
       const discountPct = Math.round(((origPrice - prod.price) / origPrice) * 100);
       document.getElementById('detail-discount-badge').textContent = `Hemat ${discountPct}%`;
+
+      // Status Badge
+      const status = prod.status || 'tersedia';
+      const statusBadgeEl = document.getElementById('detail-badge-status');
+      if (statusBadgeEl) {
+        if (status === 'terjual') {
+          statusBadgeEl.className = 'badge-pill badge-status-sold';
+          statusBadgeEl.style.backgroundColor = '#374151';
+          statusBadgeEl.style.color = '#ffffff';
+          statusBadgeEl.textContent = '✓ Terjual';
+        } else if (status === 'dalam_proses_cod') {
+          statusBadgeEl.className = 'badge-pill badge-pill-lilac';
+          statusBadgeEl.style.backgroundColor = '';
+          statusBadgeEl.style.color = '';
+          statusBadgeEl.textContent = '🤝 Dalam Proses COD';
+        } else {
+          statusBadgeEl.className = 'badge-pill badge-pill-lime';
+          statusBadgeEl.style.backgroundColor = '';
+          statusBadgeEl.style.color = '';
+          statusBadgeEl.textContent = 'Tersedia';
+        }
+      }
 
       document.getElementById('detail-badge-condition').textContent = prod.conditionBadge || prod.condition;
       document.getElementById('detail-badge-faculty').textContent = prod.faculty;
@@ -632,19 +689,61 @@
 
     function checkExistingOffer(prod) {
       const offers = getOffers();
-      const existing = offers.find(o => o.productId === prod.id && o.buyerId === 'usr-maba-01');
+      const currentUser = getCurrentUser();
+      const isSeller = Boolean(prod.seller && (prod.seller.name === currentUser.name || prod.seller.id === currentUser.id));
+      const existing = offers.find(o => o.productId === prod.id && o.buyerId === currentUser.id);
       const actionContainer = document.getElementById('main-action-container');
+
+      // Jika barang sudah terjual
+      if (prod.status === 'terjual') {
+        actionContainer.innerHTML = `
+          <button type="button" class="btn-pill btn-pill-outline w-100" style="font-size: 1.02rem; height: 50px; cursor: not-allowed; opacity: 0.7;" disabled>
+            <span>✓ Barang Sudah Terjual</span>
+          </button>
+        `;
+        return;
+      }
+
+      // Jika pengguna adalah penjual barang ini
+      if (isSeller) {
+        actionContainer.innerHTML = `
+          <div class="d-flex gap-2 w-100">
+            <a href="tawaran.html" class="btn-pill btn-pill-outline flex-grow-1" style="font-size:0.88rem; height:50px; border-color:var(--ink);">
+              <span>Kelola Tawaran Masuk</span>
+            </a>
+            <button type="button" id="btn-mark-sold-detail" class="btn-pill btn-pill-lime" style="font-size:0.88rem; height:50px; white-space:nowrap;">
+              <span>✓ Tandai Terjual</span>
+            </button>
+          </div>
+        `;
+        document.getElementById('btn-mark-sold-detail')?.addEventListener('click', () => {
+          if (confirm('Tandai barang ini sebagai sudah Terjual?')) {
+            updateProductStatus(prod.id, 'terjual');
+            prod.status = 'terjual';
+            loadProductDetails(prod);
+            checkExistingOffer(prod);
+            showToast('✓ Barang berhasil ditandai Terjual!');
+          }
+        });
+        return;
+      }
 
       if (existing) {
         if (existing.status === 'diterima') {
-          // STATUS DITERIMA: Tampilkan Tombol Lanjut ke WhatsApp
-          const waMessage = encodeURIComponent(`Halo kak ${prod.seller.name}, tawaran aku untuk "${prod.title}" di PRELOVEDU disetujui di ${formatRupiah(existing.hargaTawar)}. Kapan bisa ketemu COD di kampus?`);
-          const waLink = `https://wa.me/${existing.sellerPhone || '628123456789'}?text=${waMessage}`;
+          // STATUS DITERIMA: Tampilkan nomor WhatsApp Penjual dan Tombol Lanjut ke WhatsApp
+          const phone = (existing.sellerPhone || '628123456789').replace(/[^0-9]/g, '');
+          const waMessage = encodeURIComponent(`Halo kak ${prod.seller?.name || 'Penjual'}, tawaran aku untuk "${prod.title}" di PRELOVEDU disetujui di ${formatRupiah(existing.hargaTawar)}. Kapan bisa COD di kampus?`);
+          const waLink = `https://wa.me/${phone}?text=${waMessage}`;
 
           actionContainer.innerHTML = `
-            <a href="${waLink}" target="_blank" rel="noopener" class="btn-pill btn-pill-lime w-100" style="font-size:1rem; height:50px;">
-              <span>💬 Lanjut ke WhatsApp Penjual</span>
-            </a>
+            <div class="d-flex flex-column gap-2 w-100">
+              <div class="p-2 text-center" style="background:#eaf8d8; border:1.5px solid var(--ink); border-radius:var(--radius-sm); font-size:0.85rem;">
+                <span>Nomor WhatsApp Penjual: <strong style="font-family:monospace; font-size:0.95rem;">+${phone}</strong></span>
+              </div>
+              <a href="${waLink}" target="_blank" rel="noopener" class="btn-pill btn-pill-lime w-100" style="font-size:1rem; height:50px;">
+                <span>💬 Buka WhatsApp (wa.me)</span>
+              </a>
+            </div>
           `;
         } else if (existing.status === 'ditawar_balik') {
           actionContainer.innerHTML = `
@@ -738,28 +837,21 @@
           return;
         }
 
-        const offers = getOffers().filter(o => !(o.productId === currentProduct.id && o.buyerId === 'usr-maba-01'));
-        const newOffer = {
-          id: `${currentProduct.id}_usr-maba-01`,
+        const user = getCurrentUser();
+        addOffer({
           productId: currentProduct.id,
           productTitle: currentProduct.title,
-          productImage: currentProduct.images[0] || 'assets/img/products/prd-001-1.jpg',
-          sellerId: 'usr-seller',
-          sellerName: currentProduct.seller.name,
-          sellerPhone: '628123456789',
-          buyerId: 'usr-maba-01',
-          buyerName: 'Zahra Putri',
-          buyerPhone: '6281234567890',
+          productImage: (currentProduct.images && currentProduct.images[0]) ? currentProduct.images[0] : 'assets/img/products/prd-001-1.jpg',
+          sellerId: currentProduct.seller?.id || 'usr-seller',
+          sellerName: currentProduct.seller?.name || 'Penjual',
+          sellerPhone: currentProduct.seller?.phone || '628123456789',
+          buyerId: user.id,
+          buyerName: user.name,
+          buyerPhone: user.phone,
           hargaListing: currentProduct.price,
           hargaTawar: val,
-          catatan: noteInput.value.trim(),
-          status: 'menunggu',
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 3600000 * 48).toISOString()
-        };
-
-        offers.unshift(newOffer);
-        saveOffers(offers);
+          catatan: noteInput.value.trim()
+        });
 
         backdrop.classList.remove('active');
         showToast('🎉 Tawaran berhasil dikirim ke penjual!');
