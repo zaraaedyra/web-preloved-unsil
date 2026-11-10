@@ -589,17 +589,47 @@ export const categoriesList = [
   { id: 'elektronik', label: 'Perangkat Elektronik', icon: 'cpu' }
 ];
 
-// Daftar Fakultas untuk Dropdown Filter
+// Daftar fakultas resmi UNSIL untuk filter dan formulir iklan
 export const facultiesList = [
   'Semua Fakultas',
-  'Teknik',
-  'Ekonomi & Bisnis',
-  'MIPA',
-  'Hukum',
-  'Fasilkom',
+  'FKIP',
+  'FEB',
+  'FT',
+  'FP',
   'FISIP',
-  'Psikologi',
-  'Kedokteran',
-  'Pertanian',
-  'FKIP'
+  'FIK',
+  'FAI'
 ];
+
+const legacyFacultyAliases = {
+  'Teknik': 'FT',
+  'Teknik Informatika 2022': 'FT',
+  'Teknik Sipil 2020': 'FT',
+  'Arsitektur 2022': 'FT',
+  'Fasilkom': 'FT',
+  'Sistem Informasi 2023': 'FT',
+  'Ekonomi': 'FEB',
+  'Manajemen 2021': 'FEB',
+  'Akuntansi 2023': 'FEB',
+  'Pertanian': 'FP',
+  'Agroteknologi 2022': 'FP',
+  'MIPA': 'FKIP',
+  'Pendidikan Biologi 2023': 'FKIP',
+  'Pendidikan Bahasa Inggris 2021': 'FKIP',
+  'FSRD': 'FKIP',
+  'Desain Komunikasi Visual 2023': 'FKIP',
+  'Ilmu Budaya': 'FKIP',
+  'Sastra Indonesia 2022': 'FKIP',
+  'Hukum': 'FISIP',
+  'Ilmu Hukum 2022': 'FISIP',
+  'Psikologi': 'FISIP',
+  'Psikologi 2023': 'FISIP',
+  'Hubungan Internasional 2021': 'FISIP',
+  'Kedokteran': 'FIK',
+  'Pendidikan Dokter 2020': 'FIK',
+  'Ilmu Keolahragaan 2022': 'FIK'
+};
+
+export function normalizeFaculty(faculty) {
+  return legacyFacultyAliases[faculty] || faculty;
+}

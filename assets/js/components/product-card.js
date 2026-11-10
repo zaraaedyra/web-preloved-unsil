@@ -33,7 +33,8 @@ export function renderStatusBadge(status = 'tersedia') {
 export function renderProductCard(product, { basePath = '' } = {}) {
   const favorited = isFavorited(product.id);
   const detailUrl = `${basePath}pages/detail.html?id=${product.id}`;
-  const imgUrl = `${basePath}${product.images && product.images[0] ? product.images[0] : 'assets/img/products/prd-001-1.jpg'}`;
+  const imageSource = product.images?.[0] || 'assets/img/products/prd-001-1.jpg';
+  const imgUrl = /^(data:|https?:\/\/)/i.test(imageSource) ? imageSource : `${basePath}${imageSource}`;
   const status = product.status || 'tersedia';
 
   // Warna latar thumbnail divariasi agar estetik (lilac, lime lembut, atau warm gray)

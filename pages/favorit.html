@@ -121,6 +121,8 @@
 
       container.innerHTML = favProducts.map(item => {
         const status = item.status || 'tersedia';
+        const imageSource = item.images?.[0] || 'assets/img/products/prd-001-1.jpg';
+        const imageUrl = /^(data:|https?:\/\/)/i.test(imageSource) ? imageSource : `../${imageSource}`;
         let statusBadge = '<span class="badge-pill badge-pill-lime" style="font-size:0.72rem; padding:0.2rem 0.6rem; margin-bottom:0.35rem;">Tersedia</span>';
         let actionBtn = `
           <a href="detail.html?id=${item.id}" class="btn-pill btn-pill-lime" style="min-height:38px; padding:0.4rem 1.15rem; font-size:0.88rem;">
@@ -142,7 +144,7 @@
         return `
         <article class="featured-card ${status === 'terjual' ? 'is-sold' : ''}" style="margin-bottom:0;" data-id="${item.id}">
           <div class="featured-card-media" style="width:130px; min-height:120px; padding:0.75rem;">
-            <img src="../${item.images[0]}" alt="${item.title}" style="max-height:85px;" />
+            <img src="${imageUrl}" alt="${item.title}" style="max-height:85px;" />
           </div>
           <div class="featured-card-content" style="padding:1rem 1.25rem;">
             <div class="d-flex justify-content-between align-items-start gap-2">
